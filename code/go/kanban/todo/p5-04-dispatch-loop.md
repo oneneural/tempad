@@ -4,16 +4,20 @@
 **Spec:** Section 10.3 | **Deps:** T-P503, T-P400
 
 ## Description
+
 For each candidate while slots: claim → add to claimed → spawn worker → add to running. Claim fail → skip. Spawn fail → unassign, retry
 
 ## Files
+
 - `internal/orchestrator/dispatch.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

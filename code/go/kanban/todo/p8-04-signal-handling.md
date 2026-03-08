@@ -4,12 +4,15 @@
 **Spec:** Section 18.2 | **Deps:** T-P512
 
 ## Description
+
 Verify SIGINT/SIGTERM trigger clean shutdown: exit 0, all agents terminated, all claims released, within 30s.
 
 ## Files
+
 - `cmd/tempad/main_test.go`
 
 ## Acceptance Criteria
+
 - [ ] Both signals → exit 0
 - [ ] No orphan processes
 - [ ] Shutdown within 30s

@@ -4,12 +4,15 @@
 **Spec:** Section 15.5 | **Deps:** T-P700
 
 ## Description
+
 REST API and HTML dashboard endpoints for daemon observability.
 
 ## Files
+
 - `internal/server/handlers.go`
 
 ## Work Items
+
 - [ ] `GET /` — HTML dashboard
 - [ ] `GET /api/v1/state` — JSON: running, retry queue, aggregates
 - [ ] `GET /api/v1/<identifier>` — issue details, 404 if unknown
@@ -17,6 +20,7 @@ REST API and HTML dashboard endpoints for daemon observability.
 - [ ] Thread-safe state snapshot
 
 ## Acceptance Criteria
+
 - [ ] /api/v1/state returns correct JSON
 - [ ] /api/v1/UNKNOWN → 404
 - [ ] /api/v1/refresh triggers poll

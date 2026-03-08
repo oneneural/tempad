@@ -4,12 +4,15 @@
 **Spec:** Section 9.1 | **Deps:** T-P406, T-P407, T-P303
 
 ## Description
+
 Wire up TUI mode as the default when no --daemon flag is provided.
 
 ## Files
+
 - `cmd/tempad/main.go` (expand root command)
 
 ## Work Items
+
 - [ ] No --daemon → TUI mode
 - [ ] Load + merge + validate config
 - [ ] Create tracker client, workspace manager
@@ -18,6 +21,7 @@ Wire up TUI mode as the default when no --daemon flag is provided.
 - [ ] Graceful exit on quit
 
 ## Acceptance Criteria
+
 - [ ] `tempad` launches TUI with task board from Linear
 - [ ] Ctrl+C exits cleanly
 - [ ] Startup validation failure → exit 1

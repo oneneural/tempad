@@ -53,11 +53,13 @@ Phase 5 (Daemon) and Phase 4 (TUI) are independent — they can be developed in 
 ## Research Findings (2026-03-08)
 
 **Key corrections:**
+
 - **Channel buffer sizes**: Must use `make(chan WorkerResult, maxConcurrent)` to prevent goroutine leaks during shutdown.
 - **Retry timers**: `time.AfterFunc` callbacks must check `ctx.Err() != nil` before modifying state.
 - **Subprocess management**: `SysProcAttr{Setpgid: true}` + `syscall.Kill(-pid, sig)` for process group kill.
 
 **Recommendations:**
+
 - Use `signal.NotifyContext` for clean signal handling.
 - Use `cenkalti/backoff/v4` for exponential backoff with jitter.
 - Use `lumberjack` for log rotation (slog has none built-in).

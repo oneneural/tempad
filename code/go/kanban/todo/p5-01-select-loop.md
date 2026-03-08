@@ -4,16 +4,20 @@
 **Spec:** Section 10.3, Arch 5.3 | **Deps:** T-P500
 
 ## Description
+
 Run(ctx) with select over ctx.Done/ticker/workerResults/retryTimers/configReload. Graceful shutdown: cancel workers, wait, release claims. SIGINT/SIGTERM handling
 
 ## Files
+
 - `internal/orchestrator/orchestrator.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

@@ -4,17 +4,21 @@
 **Spec:** Section 5.1, 5.2, 5.3 | **Deps:** T-P200
 
 ## Description
+
 Stateless claim/release operations: assign → fetch → verify (race detection) → release on conflict.
 
 ## Files
+
 - `internal/claim/claimer.go`
 
 ## Work Items
+
 - [ ] `Claim(ctx, tracker, issueID, identity)`: assign → fetch → verify assignee → unassign + ClaimConflictError if mismatch
 - [ ] `Release(ctx, tracker, issueID)`: unassign
 - [ ] Stateless — all state managed by caller
 
 ## Acceptance Criteria
+
 - [ ] Successful claim assigns and verifies
 - [ ] Race lost → unassigns, returns conflict error
 - [ ] Tracker error in step 1 → returns error without step 2

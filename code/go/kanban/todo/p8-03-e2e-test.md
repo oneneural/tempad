@@ -4,12 +4,15 @@
 **Spec:** Section 20.1, 20.3 | **Deps:** All phases
 
 ## Description
+
 Full e2e: temp WORKFLOW.md + mock tracker + mock agent. Verify full lifecycle, logs, workspaces, config reload, shutdown.
 
 ## Files
+
 - `test/e2e_test.go`
 
 ## Acceptance Criteria
+
 - [ ] Full lifecycle passes
 - [ ] Logs contain expected entries
 - [ ] Workspaces managed correctly

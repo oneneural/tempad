@@ -4,18 +4,22 @@
 **Spec:** Section 8.2 | **Deps:** T-P600, T-P501
 
 ## Description
+
 Handle configReload channel in orchestrator select loop. Update poll interval, max_concurrent, backoff/timeout, prompt template. Don't restart in-flight agents.
 
 ## Files
+
 - `internal/orchestrator/orchestrator.go` (configReload case)
 
 ## Work Items
+
 - [ ] Update poll_interval → reset ticker
 - [ ] Update max_concurrent, backoff/timeout, prompt template
 - [ ] Log which fields changed
 - [ ] Do NOT restart in-flight agents
 
 ## Acceptance Criteria
+
 - [ ] poll_interval change → tick interval changes
 - [ ] max_concurrent change → applied next dispatch
 - [ ] In-flight agents unaffected

@@ -4,17 +4,21 @@
 **Spec:** Section 5.3, 9.5 | **Deps:** T-P400, T-P405
 
 ## Description
+
 Allow releasing a claimed task via u key in "My Active Tasks" section.
 
 ## Files
+
 - `internal/tui/app.go` (expand)
 
 ## Work Items
+
 - [ ] u key on "My Active Tasks" item → confirm → claim.Release() → refresh
 - [ ] Only works on issues assigned to current user
 - [ ] Show confirmation prompt
 
 ## Acceptance Criteria
+
 - [ ] Release unassigns issue
 - [ ] Issue moves from "My Active" to "Available" on next refresh
 - [ ] Cannot release someone else's task

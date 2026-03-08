@@ -4,19 +4,23 @@
 **Spec:** Section 9.1 | **Deps:** T-P105, T-P200, T-P300
 
 ## Description
+
 Define Bubble Tea Model struct, all message types, and Init() command.
 
 ## Files
+
 - `internal/tui/app.go`
 - `internal/tui/messages.go`
 
 ## Work Items
+
 - [ ] `Model` struct implementing `tea.Model` (config, tracker, workspace, claimer, task list, cursor, view state)
 - [ ] Message types: PollResultMsg, ClaimResultMsg, WorkspaceReadyMsg, IDEOpenedMsg, ConfigReloadMsg, tickMsg
 - [ ] `Init()` → `tea.Batch(pollCmd, tickCmd)`
 - [ ] Tick interval from `config.PollIntervalMs`
 
 ## Acceptance Criteria
+
 - [ ] Model compiles and implements `tea.Model`
 - [ ] Init returns poll + tick commands
 - [ ] All message types defined

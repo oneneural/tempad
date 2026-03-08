@@ -35,10 +35,12 @@ Sequential — each builds on the previous.
 ## Research Findings (2026-03-08)
 
 **Validated:**
+
 - Chi router (`go-chi/chi/v5`) confirmed as the right choice — lightweight, stdlib compatible.
 - Loopback binding (`127.0.0.1`) and `http.Server.Shutdown()` for graceful shutdown.
 
 **Recommendations:**
+
 - Use `go-chi/render` for JSON responses.
 - Add `GET /healthz` endpoint for monitoring.
 - Consider `net/http/pprof` registration for debug builds.

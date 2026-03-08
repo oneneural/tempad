@@ -4,16 +4,20 @@
 **Spec:** Section 11.1, 11.3-4 | **Deps:** T-P506
 
 ## Description
+
 SubprocessLauncher: bash -lc command, set cwd/env, handle prompt delivery, Return RunHandle with Wait/Cancel/Stdout/Stderr. Cancel: SIGTERM → 5s → SIGKILL
 
 ## Files
+
 - `internal/agent/launcher.go, process.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

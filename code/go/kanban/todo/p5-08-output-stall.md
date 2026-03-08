@@ -4,16 +4,20 @@
 **Spec:** Section 11.4, 10.7A | **Deps:** T-P507
 
 ## Description
+
 OutputMonitor: tee to log file, atomic lastOutputAt on each read, optional JSON lines parsing, tolerate no output. LastOutputAt() for stall detection
 
 ## Files
+
 - `internal/agent/output.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

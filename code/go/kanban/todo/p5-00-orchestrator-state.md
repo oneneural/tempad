@@ -4,16 +4,20 @@
 **Spec:** Section 4.1.8, 10.2.1 | **Deps:** T-P101, T-P200, T-P300, T-P400
 
 ## Description
+
 Orchestrator struct with state, channels (workerResults, retryTimers, configReload), WorkerResult and RetrySignal structs
 
 ## Files
+
 - `internal/orchestrator/orchestrator.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

@@ -4,16 +4,20 @@
 **Spec:** Section 11.3, 6.3.5 | **Deps:** T-P100
 
 ## Description
+
 DeliverPrompt: file (PROMPT.md), stdin (io.Reader), arg (CLI argument), env (TEMPAD_PROMPT). Returns DeliveryResult with stdinPipe, extraArgs, extraEnv
 
 ## Files
+
 - `internal/agent/delivery.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

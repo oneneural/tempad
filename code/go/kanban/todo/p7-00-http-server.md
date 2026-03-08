@@ -4,12 +4,15 @@
 **Spec:** Section 15.5 | **Deps:** T-P501
 
 ## Description
+
 Chi-based HTTP server binding loopback only with graceful shutdown.
 
 ## Files
+
 - `internal/server/server.go`
 
 ## Work Items
+
 - [ ] `NewServer(port, orchestrator)` with Chi router
 - [ ] Bind `127.0.0.1:<port>` (loopback only)
 - [ ] Graceful shutdown on context cancellation
@@ -17,6 +20,7 @@ Chi-based HTTP server binding loopback only with graceful shutdown.
 - [ ] 405 for unsupported methods, error envelope
 
 ## Acceptance Criteria
+
 - [ ] Server starts, binds loopback
 - [ ] Graceful shutdown works
 - [ ] 405 for wrong methods

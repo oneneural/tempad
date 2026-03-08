@@ -4,16 +4,20 @@
 **Spec:** Section 20.1 | **Deps:** T-P512
 
 ## Description
+
 Mock tracker (3 issues), mock agent (echo done). Verify: claimed, workers, continuation retry, terminal cleanup, max retries release. go test -race, goleak
 
 ## Files
+
 - `internal/orchestrator/integration_test.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

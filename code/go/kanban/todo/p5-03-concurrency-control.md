@@ -4,16 +4,20 @@
 **Spec:** Section 10.5 | **Deps:** T-P502
 
 ## Description
+
 availableSlots() and stateSlotAvailable() for global and per-state concurrency limits. Invalid per-state entries ignored
 
 ## Files
+
 - `internal/orchestrator/dispatch.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

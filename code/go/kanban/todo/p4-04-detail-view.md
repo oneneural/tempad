@@ -4,17 +4,21 @@
 **Spec:** Section 9.5 | **Deps:** T-P401
 
 ## Description
+
 Full-screen detail view for a selected task showing all issue fields.
 
 ## Files
+
 - `internal/tui/detail.go`
 
 ## Work Items
+
 - [ ] Display: identifier, title, state, priority, description (wrapped), labels, blockers (with states), URL, timestamps
 - [ ] Esc/Backspace returns to board
 - [ ] Scrollable if content exceeds terminal height
 
 ## Acceptance Criteria
+
 - [ ] All issue fields displayed
 - [ ] Long descriptions wrap correctly
 - [ ] Escape returns to board

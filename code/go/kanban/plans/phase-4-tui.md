@@ -47,10 +47,12 @@ Phase 4 (TUI) and Phase 5 (Daemon) are independent — they can be developed in 
 ## Research Findings (2026-03-08)
 
 **Key corrections:**
+
 - Add `pollInFlight bool` flag to prevent overlapping polls when Linear API is slow.
 - Use model composition with sub-models per view + `viewState` enum (not flat struct).
 
 **Recommendations:**
+
 - Use `lipgloss` for styling, `bubbles/list` for task board, `bubbles/viewport` for detail scrolling.
 - Use `glamour` for Markdown rendering of issue descriptions.
 - Selection preservation: store issue ID, re-find by ID after poll refresh.

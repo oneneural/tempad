@@ -4,9 +4,11 @@
 **Spec:** Architecture Section 13 | **Deps:** T-P800
 
 ## Description
+
 Run `go test -race ./...`, fix any races. Verify channel-only communication in orchestrator.
 
 ## Acceptance Criteria
+
 - [ ] `go test -race ./...` passes with zero warnings
 
 ## Research Notes (2026-03-08)

@@ -4,12 +4,15 @@
 **Deps:** T-P800
 
 ## Description
+
 goleak in orchestrator tests. Verify shutdown, cancellation, and retry timer edge cases leave no leaks.
 
 ## Files
+
 - `internal/orchestrator/leak_test.go`
 
 ## Acceptance Criteria
+
 - [ ] goleak reports zero leaks in all scenarios
 
 ## Research Notes (2026-03-08)

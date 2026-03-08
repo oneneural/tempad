@@ -4,16 +4,20 @@
 **Spec:** Section 10.1, 18.1-2 | **Deps:** T-P501–T-P511
 
 ## Description
+
 --daemon flag: load+merge+validate (agent.command required) → create components → orchestrator.Run(ctx). SIGINT/SIGTERM → cancel
 
 ## Files
+
 - `cmd/tempad/main.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

@@ -4,13 +4,16 @@
 **Spec:** Section 9.2 | **Deps:** T-P401
 
 ## Description
+
 Render task board with "Available Tasks" and "My Active Tasks" sections, sorting, blocked markers, Lip Gloss styles.
 
 ## Files
+
 - `internal/tui/board.go`
 - `internal/tui/styles.go`
 
 ## Work Items
+
 - [ ] View() renders two sections: "Available Tasks" (unassigned) and "My Active Tasks" (assigned to user)
 - [ ] Each row: identifier, title, priority indicator (P1-P4), state, labels
 - [ ] Sorting: priority asc (null last) → created_at oldest → identifier
@@ -18,6 +21,7 @@ Render task board with "Available Tasks" and "My Active Tasks" sections, sorting
 - [ ] Lip Gloss styles: selected row, priority colors, blocked dimming, headers, footer with keybindings
 
 ## Acceptance Criteria
+
 - [ ] Correct sort order
 - [ ] Blocked tasks visually distinct
 - [ ] Empty state message when no tasks

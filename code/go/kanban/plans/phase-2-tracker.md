@@ -42,11 +42,13 @@ Phase 2 and Phase 3 can be developed in parallel — they have no cross-dependen
 ## Research Findings (2026-03-08)
 
 **Key corrections:**
+
 - **CRITICAL**: Use `project.slug` (not `slugId`) when filtering issues — `slugId` is deprecated in the Linear API.
 - Linear returns HTTP 200 with `errors[]` for GraphQL failures — must check response body even on 200.
 - Rate limit: 5,000 requests/hour per API key (complexity-weighted).
 
 **Recommendations:**
+
 - Consider `@genqlient` or `shurcooL/graphql` for type-safe GraphQL client.
 - Cache identity resolution (email → user ID) at client construction.
 - Add `X-Request-Id` header for debugging/tracing.

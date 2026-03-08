@@ -4,18 +4,22 @@
 **Spec:** Section 8.2 | **Deps:** T-P600, T-P401
 
 ## Description
+
 Handle ConfigReloadMsg in TUI model: update config, reset poll interval, show status message.
 
 ## Files
+
 - `internal/tui/app.go` (ConfigReloadMsg)
 
 ## Work Items
+
 - [ ] Update internal config reference
 - [ ] Reset poll interval timer
 - [ ] Show "Config reloaded" status
 - [ ] Invalid → error in status bar
 
 ## Acceptance Criteria
+
 - [ ] Config change reflected
 - [ ] Poll interval change takes effect
 - [ ] Error shown for invalid config

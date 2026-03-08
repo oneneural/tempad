@@ -4,12 +4,15 @@
 **Spec:** Section 9.4 | **Deps:** T-P403
 
 ## Description
+
 Implement polling loop that refreshes the task list at configured intervals.
 
 ## Files
+
 - `internal/tui/app.go` (expand Update)
 
 ## Work Items
+
 - [ ] `pollCmd()` calls `tracker.FetchCandidateIssues()` → PollResultMsg
 - [ ] `tickCmd` via `tea.Tick(pollInterval, …)`
 - [ ] On r key → immediate poll
@@ -17,6 +20,7 @@ Implement polling loop that refreshes the task list at configured intervals.
 - [ ] No duplicate concurrent polls
 
 ## Acceptance Criteria
+
 - [ ] Task list updates every polling.interval_ms
 - [ ] Manual refresh works
 - [ ] Selection preserved after refresh

@@ -41,10 +41,12 @@ Phase 3 can be developed in parallel with Phase 2. Only T-P304 depends on Phase 
 ## Research Findings (2026-03-08)
 
 **Key corrections:**
+
 - **CRITICAL**: Path traversal prevention must use `filepath.Rel()` or `filepath.IsLocal()` (Go 1.20+), NOT `strings.HasPrefix()`.
 - Process group kill must use negative PID: `syscall.Kill(-pid, sig)` to kill entire process group.
 
 **Recommendations:**
+
 - Hook timeout: use `context.WithTimeout` + goroutine with SIGTERM → SIGKILL escalation.
 - Set `TEMPAD_ISSUE_ID`, `TEMPAD_WORKSPACE_DIR` env vars for hooks.
 - Log hook stdout/stderr via `slog` at debug level.

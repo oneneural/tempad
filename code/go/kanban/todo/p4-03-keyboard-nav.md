@@ -4,18 +4,22 @@
 **Spec:** Section 9.5 | **Deps:** T-P402
 
 ## Description
+
 Implement all keybindings for task board navigation and actions.
 
 ## Files
+
 - `internal/tui/keys.go`
 - `internal/tui/app.go` (Update method)
 
 ## Work Items
+
 - [ ] j/↓ down, k/↑ up, Enter select, r refresh, d details, o open URL, u release, q/Ctrl+C quit
 - [ ] Selection state preserved across refresh (match by issue ID)
 - [ ] Cursor wraps or stops at boundaries
 
 ## Acceptance Criteria
+
 - [ ] All keybindings work
 - [ ] Refresh doesn't reset cursor
 - [ ] q exits cleanly

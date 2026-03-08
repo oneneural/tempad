@@ -4,18 +4,22 @@
 **Spec:** Section 8.2 | **Deps:** T-P105
 
 ## Description
+
 fsnotify-based WORKFLOW.md watcher with 500ms debounce. On change: re-parse → re-merge → validate → send on channel if valid, log error if invalid.
 
 ## Files
+
 - `internal/config/watcher.go`
 
 ## Work Items
+
 - [ ] `StartWatcher(path, reload chan<-)` using fsnotify
 - [ ] 500ms debounce on change events
 - [ ] Valid → send new config. Invalid → log error, keep last known good.
 - [ ] Handle rename-and-replace (re-add watch)
 
 ## Acceptance Criteria
+
 - [ ] Edit WORKFLOW.md → new config within 1s
 - [ ] Rapid edits → single reload
 - [ ] Invalid edit → error logged, old config kept

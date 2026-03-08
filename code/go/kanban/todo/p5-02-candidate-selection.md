@@ -4,16 +4,20 @@
 **Spec:** Section 10.4 | **Deps:** T-P101
 
 ## Description
+
 selectCandidates(): filter by fields present, active states, not terminal, unassigned/self, not running/claimed/retry, blocker rule. Sort: priority asc (null last) → created_at → identifier
 
 ## Files
+
 - `internal/orchestrator/dispatch.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

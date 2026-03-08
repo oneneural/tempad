@@ -4,16 +4,20 @@
 **Spec:** Section 19.6 | **Deps:** T-P501, T-P510
 
 ## Description
+
 handleWorkerExit: remove from running. Exit 0 → completed + continuation retry (1s). Exit != 0 → failure retry (exponential backoff)
 
 ## Files
+
 - `internal/orchestrator/orchestrator.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

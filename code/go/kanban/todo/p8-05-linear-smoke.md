@@ -4,12 +4,15 @@
 **Spec:** Section 20.3 | **Deps:** All phases
 
 ## Description
+
 Tagged `//go:build smoke`. Real Linear credentials. Fetch, claim/release, normalize, run echo agent, cleanup.
 
 ## Files
+
 - `test/smoke_test.go`
 
 ## Acceptance Criteria
+
 - [ ] Passes against real Linear API
 - [ ] No orphaned assignments
 - [ ] Cleanup always runs

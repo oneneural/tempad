@@ -4,16 +4,20 @@
 **Spec:** Section 19.5, 11.3-5 | **Deps:** T-P302, T-P108, T-P506
 
 ## Description
+
 runWorker: workspace.Prepare → prompt.Render → deliver → set 7 env vars → agent.Launch → Wait → after_run hook → WorkerResult. Tee stdout/stderr to log + stall tracking
 
 ## Files
+
 - `internal/orchestrator/worker.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

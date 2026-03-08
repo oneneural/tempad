@@ -4,13 +4,16 @@
 **Spec:** Section 15.1, 15.2 | **Deps:** T-P105
 
 ## Description
+
 Configure slog with mode-specific sinks, log levels, rotation, and per-issue agent logs.
 
 ## Files
+
 - `internal/logging/setup.go`
 - `internal/logging/rotate.go`
 
 ## Work Items
+
 - [ ] TUI → stderr sink. Daemon → file sink (`~/.tempad/logs/tempad.log`)
 - [ ] Log level from config, key=value format
 - [ ] Context fields: issue_id, issue_identifier, mode, attempt, agent_pid
@@ -18,6 +21,7 @@ Configure slog with mode-specific sinks, log levels, rotation, and per-issue age
 - [ ] Per-issue: `~/.tempad/logs/<identifier>/agent.log`
 
 ## Acceptance Criteria
+
 - [ ] TUI logs to stderr, daemon to file
 - [ ] Level filtering works
 - [ ] Rotation triggers at size limit

@@ -4,9 +4,11 @@
 **Spec:** Section 20.1 | **Deps:** All phases
 
 ## Description
+
 Fill test coverage gaps across all packages. Focus: config merge (10+ cases), workflow edges, sanitization, candidate selection, backoff formula, concurrency, hooks, prompts.
 
 ## Acceptance Criteria
+
 - [ ] `go test ./...` passes
 - [ ] All Spec 20.1 test cases covered
 

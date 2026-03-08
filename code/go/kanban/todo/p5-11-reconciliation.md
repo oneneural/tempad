@@ -4,16 +4,20 @@
 **Spec:** Section 10.7 | **Deps:** T-P508, T-P303
 
 ## Description
+
 Part A: stall detection (lastOutputAt > threshold → cancel + retry). Part B: tracker state refresh (terminal → kill+clean, active → update, other → kill). Fetch fail → keep running
 
 ## Files
+
 - `internal/orchestrator/reconcile.go`
 
 ## Work Items
+
 - [ ] Implement as described above
 - [ ] Unit tests
 
 ## Acceptance Criteria
+
 - [ ] Implementation matches spec
 - [ ] Unit tests pass
 - [ ] No race conditions (`go test -race`)

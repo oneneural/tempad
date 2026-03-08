@@ -37,10 +37,12 @@ T-P600 and T-P601 can be done in parallel. T-P602 and T-P603 can also be done in
 ## Research Findings (2026-03-08)
 
 **Key corrections:**
+
 - **CRITICAL**: fsnotify must watch the **directory**, not the file. Vim/Emacs use rename-and-replace which loses file watches.
 - **slog has no built-in log rotation** — must use `lumberjack` (natefinish/lumberjack) as the io.Writer.
 
 **Recommendations:**
+
 - Lumberjack config: `MaxSize: 50`, `MaxBackups: 5`, `MaxAge: 30`, `Compress: true`.
 - Debounce pattern: `time.AfterFunc` with reset on each event.
 - TUI config reload via `tea.Cmd` that reads from channel.

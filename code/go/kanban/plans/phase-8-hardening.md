@@ -38,10 +38,12 @@ T-P800 first (fill gaps). Then T-P801/T-P802 in parallel. Then T-P803/T-P804/T-P
 ## Research Findings (2026-03-08)
 
 **Validated:**
+
 - `goleak.VerifyNone(t)` for goroutine leak detection — use in `TestMain` or per-test.
 - `go test -race ./...` with extended timeout for integration tests.
 
 **Recommendations:**
+
 - Use `testify/assert` + `testify/require` for cleaner assertions.
 - Mock Linear with `httptest.NewServer()` returning canned GraphQL responses.
 - Use `t.TempDir()` for workspace tests (auto-cleanup).
