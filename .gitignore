@@ -1,0 +1,22 @@
+# Reference repos (not part of TEMPAD codebase)
+symphony/
+
+# Go
+code/go/tempad
+code/go/*.exe
+code/go/vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
