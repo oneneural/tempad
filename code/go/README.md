@@ -27,7 +27,7 @@ go vet ./...
 ```
 cmd/tempad/              CLI entry points (Cobra)
 ├── main.go              Root command — TUI vs daemon mode switch
-├── init.go              tempad init — scaffold WORKFLOW.md
+├── init.go              tempad init — scaffold ~/.tempad/config.yaml
 ├── validate.go          tempad validate — check config
 └── clean.go             tempad clean — workspace cleanup
 

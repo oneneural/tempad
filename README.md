@@ -11,45 +11,60 @@ An enhanced open-source alternative to [OpenAI's Symphony](https://github.com/op
 
 ```
 tempad/                                  ← monorepo root
+├── docs/                                ← language-agnostic specification & design docs
+│   ├── SPEC_v1.md                       ← behavioral spec — source of truth for WHAT
+│   ├── STACK_COMPARISON_v1.md           ← Go vs Rust vs Elixir decision
+│   ├── TEMPAD_vs_SYMPHONY_v1.md         ← feature comparison with Symphony
+│   └── GAP_ANALYSIS_v1.md              ← coverage analysis vs Symphony
 ├── code/
 │   └── go/                              ← Go implementation (self-contained)
 │       ├── cmd/tempad/                  ← CLI entry points (Cobra)
-│       ├── internal/                    ← All Go packages
+│       ├── internal/                    ← all Go packages
 │       ├── docs/                        ← Go-specific docs
-│       │   ├── ARCHITECTURE_GO_v1.md    ← How to build it (Go-specific)
+│       │   ├── ARCHITECTURE_GO_v1.md    ← how to build it (Go-specific)
 │       │   ├── PRODUCT_BACKLOG_v1.md    ← 57 tickets, 8 phases
-│       │   └── BACKLOG_v1.md            ← Condensed ticket list
-│       ├── kanban/                      ← File-based kanban board
+│       │   └── BACKLOG_v1.md            ← condensed ticket list
+│       ├── kanban/                      ← file-based kanban board
 │       ├── README.md                    ← Go dev guide
-│       ├── AGENTS.md                    ← Context for coding agents
-│       ├── CLAUDE.md                    ← Points to AGENTS.md
+│       ├── AGENTS.md                    ← context for coding agents
+│       ├── CLAUDE.md                    ← points to AGENTS.md
 │       └── go.mod
-├── docs/                                ← Language-agnostic documentation
-│   ├── SPEC_v1.md                       ← What to build (behavioral spec)
-│   ├── STACK_COMPARISON_v1.md           ← Go vs Rust vs Elixir decision
-│   ├── TEMPAD_vs_SYMPHONY_v1.md         ← Feature comparison with Symphony
-│   └── GAP_ANALYSIS_v1.md              ← Coverage analysis vs Symphony
-└── README.md                            ← This file
+└── README.md                            ← this file
 ```
 
-Each implementation under `code/` is a self-contained project with its own README, agent context files, kanban board, and backlog. Language-agnostic documentation lives in `docs/` at the monorepo root.
+---
+
+## Specification & Design
+
+Language-agnostic documentation lives in `docs/` at the monorepo root. These define **what** TEMPAD is and **why** it exists — independent of any implementation.
+
+| Document | Version | Purpose |
+|----------|---------|---------|
+| [`docs/SPEC_v1.md`](docs/SPEC_v1.md) | 1.0.0 | Behavioral specification — source of truth for **what** TEMPAD does |
+| [`docs/TEMPAD_vs_SYMPHONY_v1.md`](docs/TEMPAD_vs_SYMPHONY_v1.md) | 1.0.0 | Feature comparison with Symphony |
+| [`docs/GAP_ANALYSIS_v1.md`](docs/GAP_ANALYSIS_v1.md) | 1.0.0 | Coverage analysis vs Symphony |
+| [`docs/STACK_COMPARISON_v1.md`](docs/STACK_COMPARISON_v1.md) | 1.0.0 | Go vs Rust vs Elixir weighted comparison |
+
+---
 
 ## Implementations
 
-| Language | Path | Status |
-|----------|------|--------|
-| **Go** | [`code/go/`](code/go/) | Active — Phase 1 complete |
+Each implementation under `code/` is a self-contained project with its own README, agent context files, kanban board, and backlog. Implementation-specific docs (architecture, backlog) live within each implementation directory.
 
-## Documentation
+| Language | Path | Status | Architecture |
+|----------|------|--------|-------------|
+| **Go** | [`code/go/`](code/go/) | Active — Phase 1 complete | [`ARCHITECTURE_GO_v1.md`](code/go/docs/ARCHITECTURE_GO_v1.md) |
 
-| Document | Version | Scope | Purpose |
-|----------|---------|-------|---------|
-| [`docs/SPEC_v1.md`](docs/SPEC_v1.md) | 1.0.0 | All | Behavioral specification — source of truth for **what** |
-| [`docs/STACK_COMPARISON_v1.md`](docs/STACK_COMPARISON_v1.md) | 1.0.0 | All | Go vs Rust vs Elixir weighted comparison |
-| [`docs/TEMPAD_vs_SYMPHONY_v1.md`](docs/TEMPAD_vs_SYMPHONY_v1.md) | 1.0.0 | All | Feature comparison with Symphony |
-| [`docs/GAP_ANALYSIS_v1.md`](docs/GAP_ANALYSIS_v1.md) | 1.0.0 | All | Coverage analysis vs Symphony |
-| [`code/go/docs/ARCHITECTURE_GO_v1.md`](code/go/docs/ARCHITECTURE_GO_v1.md) | 1.0.0 | Go | Go implementation guide — source of truth for **how** |
-| [`code/go/docs/PRODUCT_BACKLOG_v1.md`](code/go/docs/PRODUCT_BACKLOG_v1.md) | 1.0.0 | Go | All 57 tickets with work items and acceptance criteria |
+### Adding a New Implementation
+
+To add a new language implementation:
+
+1. Create `code/<language>/` with its own `README.md`, `AGENTS.md`, and `CLAUDE.md`
+2. Add implementation-specific docs under `code/<language>/docs/` (architecture, backlog)
+3. Set up a `kanban/` board for task tracking
+4. Reference the shared spec (`docs/SPEC_v1.md`) as the source of truth for behavior
+
+---
 
 ## Getting Started
 
