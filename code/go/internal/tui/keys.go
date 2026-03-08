@@ -73,7 +73,12 @@ func (m Model) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case "u":
-		// Release task — placeholder for T-P407.
+		// Release a task assigned to the current user.
+		if issue := m.selectedIssue(); issue != nil && issue.Assignee != "" {
+			m.status = "Releasing..."
+			m.err = nil
+			return m, m.releaseCmd(issue.ID)
+		}
 		return m, nil
 	}
 
