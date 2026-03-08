@@ -434,7 +434,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ---
 
-## 7. Phase 2: Tracker Client (Linear) — PENDING
+## 7. Phase 2: Tracker Client (Linear) — COMPLETE
 
 **Goal:** All 6 tracker operations work against Linear's GraphQL API. Issues normalized into domain model.
 
@@ -564,7 +564,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ---
 
-## 8. Phase 3: Workspace Manager + Hooks — PENDING
+## 8. Phase 3: Workspace Manager + Hooks — COMPLETE
 
 **Goal:** Deterministic workspace creation, hook execution, safety invariants, cleanup.
 
@@ -659,7 +659,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ---
 
-## 9. Phase 4: TUI Mode — PENDING
+## 9. Phase 4: TUI Mode — COMPLETE
 
 **Goal:** `tempad` (default, no flags) shows a live task board, lets developer select → claim → workspace → IDE.
 
@@ -773,7 +773,7 @@ T-P400 → T-P401 → {T-P402, T-P404} → T-P403 → T-P405 → T-P406 → T-P4
 
 ---
 
-## 10. Phase 5: Daemon Mode Orchestrator — PENDING
+## 10. Phase 5: Daemon Mode Orchestrator — COMPLETE
 
 **Goal:** `tempad --daemon` runs fully autonomous: poll → claim → dispatch → monitor → retry → reconcile.
 
@@ -957,7 +957,7 @@ T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 �
 
 ---
 
-## 11. Phase 6: Hot Reload + Logging + Polish — PENDING
+## 11. Phase 6: Hot Reload + Logging + Polish — COMPLETE
 
 **Goal:** Dynamic config reload, structured logging, production-ready polish.
 
@@ -1013,7 +1013,7 @@ T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 �
 
 ---
 
-## 12. Phase 7: HTTP Server Extension — PENDING
+## 12. Phase 7: HTTP Server Extension — COMPLETE
 
 **Goal:** Optional `--port` enables REST API and dashboard for daemon mode observability.
 
@@ -1057,7 +1057,7 @@ T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 �
 
 ---
 
-## 13. Phase 8: Testing + Hardening — PENDING
+## 13. Phase 8: Testing + Hardening — COMPLETE
 
 **Goal:** Full test coverage, race detection, goroutine leak prevention, production readiness.
 
