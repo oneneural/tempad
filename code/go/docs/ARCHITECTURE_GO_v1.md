@@ -6,7 +6,7 @@
 | **Module** | `github.com/oneneural/tempad` |
 | **Language** | Go 1.22+ |
 | **Date** | 2026-03-08 |
-| **Status** | Approved — ready for implementation |
+| **Status** | Approved — implementation complete |
 | **Spec** | [`docs/SPEC_v1.md`](../docs/SPEC_v1.md) v1.0.0 |
 
 ---
