@@ -209,12 +209,6 @@ func (m Model) updateDetail(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// viewBoard renders the task board.
-// Placeholder — rendering added in T-P402.
-func (m Model) viewBoard() string {
-	return "TEMPAD — Loading..."
-}
-
 // viewDetail renders the detail view.
 // Placeholder — rendering added in T-P404.
 func (m Model) viewDetail() string {
