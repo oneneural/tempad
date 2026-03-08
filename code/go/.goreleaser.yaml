@@ -86,18 +86,14 @@ release:
   prerelease: auto
   draft: false
 
-brews:
+homebrew_casks:
   - name: tempad
     repository:
       owner: oneneural
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    directory: Formula
+    directory: Casks
     homepage: https://github.com/oneneural/tempad
     description: "Temporal Execution & Management Poll-Agent Dispatcher — bridge issue trackers and developer workflows"
     license: MIT
-    install: |
-      bin.install "tempad"
-    test: |
-      system "#{bin}/tempad", "--version"
     skip_upload: auto
