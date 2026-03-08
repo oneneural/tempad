@@ -1,8 +1,14 @@
 # TEMPAD
 
+[![CI](https://github.com/oneneural/tempad/actions/workflows/ci.yml/badge.svg)](https://github.com/oneneural/tempad/actions/workflows/ci.yml)
+[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
 An enhanced open-source alternative to [OpenAI's Symphony](https://github.com/openai/symphony). TEMPAD continuously reads work from Linear, presents available tasks to the developer, and either opens an IDE session (TUI mode) or runs coding agents headlessly (daemon mode) in isolated per-issue workspaces.
+
+> **TEMPAD is agent-agnostic.** Use any CLI tool as your coding agent: Claude Code, Codex, Aider, or any command that reads a prompt and writes code.
 
 ## What Does TEMPAD Do?
 
@@ -112,6 +118,13 @@ tempad/
 ## For Coding Agents
 
 Each implementation has its own `AGENTS.md` and `CLAUDE.md` at its root. See [`code/go/AGENTS.md`](code/go/AGENTS.md) for the Go implementation.
+
+## Community
+
+- [Issues](https://github.com/oneneural/tempad/issues) — Bug reports and feature requests
+- [Contributing](CONTRIBUTING.md) — How to contribute
+- [Code of Conduct](CODE_OF_CONDUCT.md) — Community guidelines
+- [Security](SECURITY.md) — Reporting vulnerabilities
 
 ## License
 

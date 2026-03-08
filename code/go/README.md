@@ -1,5 +1,8 @@
 # TEMPAD — Go Implementation
 
+[![CI](https://github.com/oneneural/tempad/actions/workflows/ci.yml/badge.svg)](https://github.com/oneneural/tempad/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/oneneural/tempad)](https://goreportcard.com/report/github.com/oneneural/tempad)
+
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
 A developer-local service that polls [Linear](https://linear.app) for work, presents tasks via an interactive TUI, and dispatches coding agents in isolated per-issue workspaces. An enhanced open-source alternative to [OpenAI's Symphony](https://github.com/openai/symphony).
