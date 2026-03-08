@@ -57,8 +57,10 @@ func (b *Builder) Render(templateStr string, issue domain.Issue, attempt *int) (
 	}
 
 	bindings := map[string]any{
-		"issue":   issueToMap(issue),
-		"attempt": attempt,
+		"issue": issueToMap(issue),
+	}
+	if attempt != nil {
+		bindings["attempt"] = *attempt
 	}
 
 	out, err := b.engine.ParseAndRenderString(templateStr, bindings)

@@ -14,7 +14,7 @@ func TestSanitizeIdentifier(t *testing.T) {
 		{"special!@#$chars", "special____chars"},
 		{"dots.and-dashes", "dots.and-dashes"},
 		{"UPPER_lower.123", "UPPER_lower.123"},
-		{"слово", "______"},
+		{"слово", "_____"},
 		{"", ""},
 	}
 

@@ -147,3 +147,4 @@ feat/pX-YY-short-description
 5. Run `go build ./cmd/tempad && go test -race ./...` after every change.
 6. Never run agent commands outside the workspace directory. Workspace safety is critical.
 7. If behavior changes meaningfully, update the spec in the same change.
+8. **No AI references in commits or PRs** — Never mention Claude, GPT, Copilot, AI, or any AI tool in git commit messages, PR titles, PR descriptions, or branch names. Write commits as if a human authored them.
