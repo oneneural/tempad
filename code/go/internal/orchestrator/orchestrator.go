@@ -86,27 +86,120 @@ func (o *Orchestrator) ReloadConfig(cfg *config.ServiceConfig) {
 }
 
 // Run starts the orchestrator's main select loop. It blocks until the context
-// is canceled. Placeholder — the select loop is implemented in T-P501.
+// is canceled. The select loop handles:
+//   - ctx.Done: graceful shutdown
+//   - ticker: periodic poll → reconcile → dispatch
+//   - workerResults: agent exit handling
+//   - retryTimers: retry scheduling
+//   - configReload: apply new config
 func (o *Orchestrator) Run(ctx context.Context) error {
 	o.logger.Info("orchestrator starting",
 		"poll_interval_ms", o.cfg.PollIntervalMs,
 		"max_concurrent", o.cfg.MaxConcurrent,
 	)
 
-	// Placeholder — T-P501 implements the select loop.
-	<-ctx.Done()
+	interval := time.Duration(o.cfg.PollIntervalMs) * time.Millisecond
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
 
-	o.shutdown()
-	return ctx.Err()
+	// Immediate first tick.
+	o.tick(ctx)
+
+	for {
+		select {
+		case <-ctx.Done():
+			o.shutdown()
+			return ctx.Err()
+
+		case <-ticker.C:
+			o.tick(ctx)
+
+		case result := <-o.workerResults:
+			o.handleWorkerExit(ctx, result)
+
+		case signal := <-o.retryTimers:
+			o.handleRetry(ctx, signal)
+
+		case cfg := <-o.configReload:
+			o.applyNewConfig(cfg, ticker)
+		}
+	}
 }
 
-// shutdown cleans up on exit: stop timers, drain channels.
+// tick runs one poll-reconcile-dispatch cycle.
+// Placeholder — reconciliation (T-P511) and dispatch (T-P504) added later.
+func (o *Orchestrator) tick(ctx context.Context) {
+	o.logger.Debug("tick",
+		"running", o.state.RunningCount(),
+		"slots", o.state.AvailableSlots(),
+	)
+	// TODO(T-P511): reconcile running issues.
+	// TODO(T-P504): dispatch eligible candidates.
+}
+
+// handleWorkerExit processes a worker result when an agent finishes.
+// Placeholder — worker exit handling (T-P509) added later.
+func (o *Orchestrator) handleWorkerExit(ctx context.Context, result WorkerResult) {
+	o.logger.Info("worker exit",
+		"issue", result.Identifier,
+		"exit_code", result.ExitCode,
+		"duration", result.Duration,
+	)
+	// TODO(T-P509): handle exit, schedule retry.
+}
+
+// handleRetry processes a retry signal when a timer fires.
+// Placeholder — retry handling (T-P510) added later.
+func (o *Orchestrator) handleRetry(ctx context.Context, signal RetrySignal) {
+	if ctx.Err() != nil {
+		return // Don't retry during shutdown.
+	}
+	o.logger.Info("retry signal",
+		"issue", signal.Identifier,
+		"attempt", signal.Attempt,
+	)
+	// TODO(T-P510): check issue state, dispatch if eligible.
+}
+
+// applyNewConfig applies a reloaded config to the orchestrator.
+func (o *Orchestrator) applyNewConfig(cfg *config.ServiceConfig, ticker *time.Ticker) {
+	o.logger.Info("applying new config",
+		"poll_interval_ms", cfg.PollIntervalMs,
+		"max_concurrent", cfg.MaxConcurrent,
+	)
+	o.cfg = cfg
+
+	// Update state limits.
+	o.state.PollIntervalMs = cfg.PollIntervalMs
+	o.state.MaxConcurrentAgents = cfg.MaxConcurrent
+
+	// Reset ticker interval.
+	newInterval := time.Duration(cfg.PollIntervalMs) * time.Millisecond
+	ticker.Reset(newInterval)
+}
+
+// shutdown cleans up on exit: stop timers, release claims.
 func (o *Orchestrator) shutdown() {
-	o.logger.Info("orchestrator shutting down")
+	o.logger.Info("orchestrator shutting down",
+		"running", o.state.RunningCount(),
+		"claimed", len(o.state.Claimed),
+	)
 
 	// Cancel all retry timers.
 	for id, timer := range o.activeTimers {
 		timer.Stop()
 		delete(o.activeTimers, id)
+	}
+
+	// Release all claims (best effort).
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	for issueID := range o.state.Claimed {
+		if err := o.tracker.UnassignIssue(ctx, issueID); err != nil {
+			o.logger.Warn("failed to release claim on shutdown",
+				"issue", issueID,
+				"error", err,
+			)
+		}
 	}
 }
