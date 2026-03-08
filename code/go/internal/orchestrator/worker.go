@@ -15,7 +15,8 @@ import (
 
 // runWorker runs the full worker lifecycle for an issue.
 // This runs in its own goroutine. It sends a WorkerResult when done.
-func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attempt int) {
+// lastOutput is pre-allocated by the orchestrator goroutine for stall detection.
+func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attempt int, lastOutput *atomic.Int64) {
 	log := o.logger.With("issue", issue.Identifier, "attempt", attempt)
 
 	// Ensure we always send a result.
@@ -81,14 +82,6 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 		result.ExitCode = 1
 		return
 	}
-
-	// Store cancel function for stall detection / reconciliation.
-	o.workerCancels[issue.ID] = handle.Cancel
-
-	// Set up output monitoring for stall detection.
-	lastOutput := &atomic.Int64{}
-	lastOutput.Store(time.Now().UnixNano())
-	o.lastOutput[issue.ID] = lastOutput
 
 	// Drain stdout/stderr in background, updating stall timestamp.
 	go drainOutput(handle.Stdout, lastOutput)

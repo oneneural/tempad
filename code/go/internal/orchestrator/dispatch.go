@@ -3,6 +3,7 @@ package orchestrator
 import (
 	"context"
 	"sort"
+	"sync/atomic"
 	"time"
 
 	"github.com/oneneural/tempad/internal/claim"
@@ -119,7 +120,16 @@ func (o *Orchestrator) dispatch(ctx context.Context, candidates []domain.Issue) 
 		}
 		o.state.Running[issue.ID] = run
 
-		go o.runWorker(ctx, issue, attempt)
+		// Pre-allocate cancel and output monitor on orchestrator goroutine
+		// to avoid data races with worker goroutines.
+		workerCtx, workerCancel := context.WithCancel(ctx)
+		o.workerCancels[issue.ID] = workerCancel
+
+		lastOutput := &atomic.Int64{}
+		lastOutput.Store(time.Now().UnixNano())
+		o.lastOutput[issue.ID] = lastOutput
+
+		go o.runWorker(workerCtx, issue, attempt, lastOutput)
 
 		o.logger.Info("dispatched",
 			"issue", issue.Identifier,
