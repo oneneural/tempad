@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/oneneural/tempad/actions/workflows/ci.yml/badge.svg)](https://github.com/oneneural/tempad/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/oneneural/tempad)](https://goreportcard.com/report/github.com/oneneural/tempad)
+[![Release](https://img.shields.io/github/v/release/oneneural/tempad?filter=go/*&label=Latest)](https://github.com/oneneural/tempad/releases)
 
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
@@ -35,11 +36,36 @@ A developer-local service that polls [Linear](https://linear.app) for work, pres
 
 ## Prerequisites
 
-- **Go 1.22+** — [install](https://go.dev/dl/)
 - **Linear account** with an API key — create at [Linear Settings → API](https://linear.app/settings/api)
 - A Linear project with issues to work on
 
 ## Installation
+
+### Homebrew (macOS/Linux)
+
+```bash
+brew install oneneural/tap/tempad
+```
+
+### Script (macOS/Linux)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/oneneural/tempad/main/scripts/install.sh | bash
+```
+
+Downloads the latest release, verifies the SHA256 checksum, and installs to `/usr/local/bin`.
+
+### Go install
+
+```bash
+go install github.com/oneneural/tempad/cmd/tempad@latest
+```
+
+Requires Go 1.22+.
+
+### Download binary
+
+Download the archive for your platform from the [latest release](https://github.com/oneneural/tempad/releases), extract, and add to your PATH.
 
 ### From source
 
@@ -48,15 +74,7 @@ git clone https://github.com/oneneural/tempad.git
 cd tempad/code/go
 
 go build -o tempad ./cmd/tempad
-
-# Verify
 ./tempad --help
-```
-
-### Go install
-
-```bash
-go install github.com/oneneural/tempad/cmd/tempad@latest
 ```
 
 ---
