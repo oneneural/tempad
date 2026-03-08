@@ -3,6 +3,7 @@
 package workspace
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,6 +11,13 @@ import (
 
 	"github.com/oneneural/tempad/internal/domain"
 )
+
+// HookConfig holds the hook scripts and timeout for workspace lifecycle.
+type HookConfig struct {
+	AfterCreate string // Script to run after workspace creation (only on new).
+	BeforeRun   string // Script to run before each agent run.
+	TimeoutMs   int    // Hook timeout in milliseconds.
+}
 
 // Manager handles workspace path resolution, creation, and cleanup.
 type Manager struct {
@@ -90,4 +98,54 @@ func (m *Manager) EnsureDir(path string) (isNew bool, err error) {
 	}
 
 	return true, nil
+}
+
+// Prepare resolves, creates, and runs lifecycle hooks for a workspace.
+// Steps: resolve path → ensure dir → after_create (if new) → before_run.
+// If after_create fails, the directory is removed. If before_run fails,
+// the directory is preserved but an error is returned.
+func (m *Manager) Prepare(ctx context.Context, issue domain.Issue, hooks HookConfig) (*domain.Workspace, error) {
+	wsPath, err := m.ResolvePath(issue.Identifier)
+	if err != nil {
+		return nil, fmt.Errorf("resolve workspace path: %w", err)
+	}
+
+	isNew, err := m.EnsureDir(wsPath)
+	if err != nil {
+		return nil, fmt.Errorf("ensure workspace dir: %w", err)
+	}
+
+	hookEnv := map[string]string{
+		"TEMPAD_ISSUE_ID":      issue.Identifier,
+		"TEMPAD_WORKSPACE_DIR": wsPath,
+	}
+
+	timeoutMs := hooks.TimeoutMs
+	if timeoutMs <= 0 {
+		timeoutMs = 30000 // 30s default
+	}
+
+	// Run after_create hook only for newly created workspaces.
+	if isNew && hooks.AfterCreate != "" {
+		_, err := RunHook(ctx, "after_create", hooks.AfterCreate, wsPath, timeoutMs, hookEnv)
+		if err != nil {
+			// Clean up the newly created directory on after_create failure.
+			os.RemoveAll(wsPath)
+			return nil, fmt.Errorf("after_create hook: %w", err)
+		}
+	}
+
+	// Run before_run hook on every prepare.
+	if hooks.BeforeRun != "" {
+		_, err := RunHook(ctx, "before_run", hooks.BeforeRun, wsPath, timeoutMs, hookEnv)
+		if err != nil {
+			return nil, fmt.Errorf("before_run hook: %w", err)
+		}
+	}
+
+	return &domain.Workspace{
+		Path:         wsPath,
+		WorkspaceKey: domain.SanitizeIdentifier(issue.Identifier),
+		CreatedNow:   isNew,
+	}, nil
 }
