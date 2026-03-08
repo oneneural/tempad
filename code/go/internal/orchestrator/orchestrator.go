@@ -93,6 +93,11 @@ func (o *Orchestrator) State() *domain.OrchestratorState {
 	return o.state
 }
 
+// SetLauncher overrides the agent launcher (used in tests).
+func (o *Orchestrator) SetLauncher(l agent.Launcher) {
+	o.launcher = l
+}
+
 // ReloadConfig sends a new config to the orchestrator for application on the
 // next tick. Non-blocking — drops the config if the channel is full.
 func (o *Orchestrator) ReloadConfig(cfg *config.ServiceConfig) {
