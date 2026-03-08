@@ -125,7 +125,7 @@ These are the right things to drop for an agent-agnostic design.
 ## 4. Implementation Complexity Assessment
 
 | Component | Complexity | Notes |
-|---|---|---|
+| --- | --- | --- |
 | Workflow Loader | Low | YAML front matter + markdown body parse. Identical to Symphony. |
 | Config Layer | Low | Merge chain + typed getters. TEMPAD adds user config file but same pattern. |
 | Issue Tracker Client | Medium | Linear GraphQL + pagination + normalization. TEMPAD adds assign/unassign/fetch_issue. |
@@ -175,7 +175,7 @@ These are the right things to drop for an agent-agnostic design.
 ## 6. Summary
 
 | Dimension | Status |
-|---|---|
+| --- | --- |
 | Symphony feature coverage | **Complete** — all orchestration features present |
 | Intentional removals | **Correct** — only Codex-specific coupling removed |
 | New features feasible | **Yes** — TUI, claiming, split config, CLI subcommands all straightforward |

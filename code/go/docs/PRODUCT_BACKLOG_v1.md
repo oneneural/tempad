@@ -47,7 +47,7 @@ There is no central server. Each developer runs T.E.M.P.A.D. on their own machin
 ### Final Scores (Weighted)
 
 | Stack | Raw Score | Weighted Score |
-|-------|-----------|---------------|
+| ------- | ----------- | --------------- |
 | **Go** | 58/60 | **116** |
 | Rust | 50/60 | 101 |
 | Elixir | 48/60 | 93 |
@@ -64,7 +64,7 @@ There is no central server. Each developer runs T.E.M.P.A.D. on their own machin
 ### Dependencies
 
 | Purpose | Package | Notes |
-|---------|---------|-------|
+| --------- | --------- | ------- |
 | CLI framework | `github.com/spf13/cobra` | Industry standard |
 | TUI framework | `github.com/charmbracelet/bubbletea` | Elm Architecture, v1.x |
 | TUI styling | `github.com/charmbracelet/lipgloss` | Pairs with Bubble Tea |
@@ -232,7 +232,7 @@ vim ~/.tempad/config.yaml
 ### CLI Flags
 
 | Flag | Description | Default |
-|------|-------------|---------|
+| ------ | ------------- | --------- |
 | `--daemon` | Run in headless daemon mode | false (TUI mode) |
 | `--workflow <path>` | Path to WORKFLOW.md | `./WORKFLOW.md` |
 | `--identity <id>` | Tracker identity (overrides config) | from config |
@@ -275,7 +275,7 @@ GOOS=linux GOARCH=amd64 go build -o tempad-linux-amd64 ./cmd/tempad
 ## 5. Phase Overview and Status
 
 | Phase | Tickets | Status | Key Deliverable |
-|-------|---------|--------|----------------|
+| ------- | --------- | -------- | ---------------- |
 | 1 — Foundation | T-P100 to T-P109 (10) | **COMPLETE** | CLI, config pipeline, domain model, prompt builder |
 | 2 — Tracker Client | T-P200 to T-P205 (6) | Pending | Linear GraphQL client, all 6 operations, normalization |
 | 3 — Workspace Manager | T-P300 to T-P304 (5) | Pending | Workspace lifecycle, hooks, safety, `tempad clean` |
@@ -558,7 +558,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ### Phase 2 Internal Dependency Chain
 
-```
+```text
 {T-P200, T-P201} → T-P202 → T-P203 → T-P204 → T-P205
 ```
 
@@ -653,7 +653,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ### Phase 3 Internal Dependency Chain
 
-```
+```text
 {T-P300, T-P301} → T-P302 → T-P303 → T-P304
 ```
 
@@ -767,7 +767,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ### Phase 4 Internal Dependency Chain
 
-```
+```text
 T-P400 → T-P401 → {T-P402, T-P404} → T-P403 → T-P405 → T-P406 → T-P407 → T-P408
 ```
 
@@ -951,7 +951,7 @@ T-P400 → T-P401 → {T-P402, T-P404} → T-P403 → T-P405 → T-P406 → T-P4
 
 ### Phase 5 Internal Dependency Chain
 
-```
+```text
 T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 → T-P505 → {T-P509, T-P510, T-P511} → T-P512 → T-P513
 ```
 
@@ -1119,7 +1119,7 @@ T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 �
 Every item from Spec Section 21.1 (Required for Conformance) is mapped to tickets:
 
 | Spec Requirement | Ticket(s) |
-|-----------------|-----------|
+| ----------------- | ----------- |
 | CLI with TUI + daemon modes | T-P107, T-P408, T-P512 |
 | WORKFLOW.md loader | T-P102 |
 | User config | T-P103 |
@@ -1155,7 +1155,7 @@ These are implementation details to resolve during coding, not architectural blo
 
 ## 16. Parallelization Opportunities
 
-```
+```text
 Phase 1: T-P100 → {T-P101, T-P102, T-P103, T-P104} → T-P105 → T-P106 → T-P107 → T-P108 → T-P109
 Phase 2: {T-P200, T-P201} → T-P202 → T-P203 → T-P204 → T-P205
 Phase 3: {T-P300, T-P301} → T-P302 → T-P303 → T-P304

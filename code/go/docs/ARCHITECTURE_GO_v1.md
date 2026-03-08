@@ -1024,7 +1024,7 @@ graph LR
 ## 11. Dependency List
 
 | Purpose | Package | Version Strategy |
-|---------|---------|-----------------|
+| --------- | --------- | ----------------- |
 | CLI framework | `github.com/spf13/cobra` | Latest stable |
 | TUI framework | `github.com/charmbracelet/bubbletea` | v1.x |
 | TUI styling | `github.com/charmbracelet/lipgloss` | Latest stable |
@@ -1052,7 +1052,7 @@ graph LR
 ## 12. Key Design Decisions Log
 
 | # | Decision | Rationale |
-|---|----------|-----------|
+| --- | ---------- | ----------- |
 | 1 | Go over Rust/Elixir | Best TUI (Bubble Tea), trivial distribution, Liquid strict mode works. See STACK_COMPARISON_v1.md. |
 | 2 | Channels over callbacks | Single point of state mutation in orchestrator select loop. No shared mutable state. Prevents data races by design. |
 | 3 | Shared core + mode adapters | Tracker client, workspace manager, claim logic, config are identical in both modes. Only the outer loop differs (Bubble Tea vs orchestrator select). |

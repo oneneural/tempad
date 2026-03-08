@@ -1384,7 +1384,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ## Summary
 
 | Phase | Tickets | Key Deliverable |
-|-------|---------|----------------|
+| ------- | --------- | ---------------- |
 | 1 — Foundation | T-P100 to T-P109 (10) | `tempad init`, `tempad validate`, config pipeline, prompt builder |
 | 2 — Tracker | T-P200 to T-P205 (6) | Linear GraphQL client, all 6 operations, normalization |
 | 3 — Workspace | T-P300 to T-P304 (5) | Workspace lifecycle, hooks, safety, `tempad clean` |
@@ -1410,7 +1410,7 @@ Phase 5: T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} →
 Every item from Spec Section 21.1 (Required for Conformance) is covered:
 
 | Spec Requirement | Ticket(s) |
-|-----------------|-----------|
+| ----------------- | ----------- |
 | CLI with TUI + daemon modes | T-P107, T-P408, T-P512 |
 | WORKFLOW.md loader | T-P102 |
 | User config | T-P103 |

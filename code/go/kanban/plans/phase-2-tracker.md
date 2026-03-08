@@ -19,7 +19,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P200 | Tracker client interface and error types | 🔲 Todo | `p2-00-tracker-interface.md` | T-P101 |
 | 2 | T-P201 | Linear GraphQL query/mutation builders | 🔲 Todo | `p2-01-graphql-queries.md` | T-P100 |
 | 3 | T-P202 | Linear HTTP transport and pagination | 🔲 Todo | `p2-02-http-transport.md` | T-P200, T-P201 |
@@ -29,7 +29,7 @@
 
 ## Dependency Order
 
-```
+```text
 {T-P200, T-P201} → T-P202 → T-P203 → T-P204 → T-P205
 ```
 

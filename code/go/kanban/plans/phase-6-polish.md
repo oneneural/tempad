@@ -20,7 +20,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P600 | WORKFLOW.md file watcher + debounce | 🔲 Todo | `p6-00-file-watcher.md` | T-P105 |
 | 2 | T-P601 | Structured logging setup | 🔲 Todo | `p6-01-logging-setup.md` | T-P105 |
 | 3 | T-P602 | Config reload → orchestrator | 🔲 Todo | `p6-02-reload-orchestrator.md` | T-P600, T-P501 |
@@ -28,7 +28,7 @@
 
 ## Dependency Order
 
-```
+```text
 {T-P600, T-P601} → {T-P602, T-P603}
 ```
 

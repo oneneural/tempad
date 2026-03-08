@@ -21,7 +21,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P400 | Claim mechanism (shared) | 🔲 Todo | `p4-00-claim-mechanism.md` | T-P200 |
 | 2 | T-P401 | Bubble Tea app model + messages | 🔲 Todo | `p4-01-app-model.md` | T-P105, T-P200, T-P300 |
 | 3 | T-P402 | Task board view — rendering | 🔲 Todo | `p4-02-board-view.md` | T-P401 |
@@ -34,7 +34,7 @@
 
 ## Dependency Order
 
-```
+```text
 T-P400 → T-P401 → {T-P402, T-P404} → T-P403 → T-P405 → T-P406 → T-P407 → T-P408
 ```
 

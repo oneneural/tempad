@@ -19,14 +19,14 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P700 | HTTP server setup and lifecycle | 🔲 Todo | `p7-00-http-server.md` | T-P501 |
 | 2 | T-P701 | API endpoints | 🔲 Todo | `p7-01-api-endpoints.md` | T-P700 |
 | 3 | T-P702 | HTTP server CLI integration | 🔲 Todo | `p7-02-http-cli.md` | T-P701, T-P512 |
 
 ## Dependency Order
 
-```
+```text
 T-P700 → T-P701 → T-P702
 ```
 

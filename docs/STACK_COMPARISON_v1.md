@@ -16,7 +16,7 @@ Every requirement below is extracted directly from the TEMPAD spec (docs/SPEC_v1
 The criteria are weighted by importance to TEMPAD's success:
 
 | Weight | Criteria | Why it matters |
-|--------|----------|---------------|
+| -------- | ---------- | --------------- |
 | **Critical** | Subprocess management | Core daemon-mode contract: spawn, monitor, kill, timeout, capture stdout/stderr |
 | **Critical** | TUI framework | Default operating mode; task board, live refresh, keyboard navigation |
 | **Critical** | Distribution model | Developer tool must "just work" — download and run |
@@ -39,7 +39,7 @@ The criteria are weighted by importance to TEMPAD's success:
 **Philosophy:** Simple, fast compilation, goroutines for concurrency, single static binary.
 
 | Requirement | Library | Score | Notes |
-|------------|---------|-------|-------|
+| ------------ | --------- | ------- | ------- |
 | Subprocess mgmt | `os/exec` (stdlib) | **5** | Battle-tested. `CommandContext` for timeout. Goroutines for pipe readers. |
 | TUI framework | Bubble Tea (`charmbracelet/bubbletea`) | **5** | Elm Architecture. Production-proven (10K+ apps). Rich widget ecosystem (Lip Gloss for styling, Bubbles for components). |
 | Distribution | `go build` + GOOS/GOARCH | **5** | Zero-setup cross-compilation. 5–15 MB static binary. No runtime deps. |
@@ -78,7 +78,7 @@ The criteria are weighted by importance to TEMPAD's success:
 **Philosophy:** Zero-cost abstractions, memory safety without GC, maximum performance, single binary.
 
 | Requirement | Library | Score | Notes |
-|------------|---------|-------|-------|
+| ------------ | --------- | ------- | ------- |
 | Subprocess mgmt | `tokio::process` | **5** | Async subprocess. Timeout via `tokio::time::timeout`. Solid. |
 | TUI framework | Ratatui | **4** | Mature, performant. But requires manual event loop architecture. Higher learning curve than Bubble Tea. |
 | Distribution | `cargo build --release` | **5** | Static binary via musl target. 5–20 MB. `cross` for cross-compilation. |
@@ -118,7 +118,7 @@ The criteria are weighted by importance to TEMPAD's success:
 **Philosophy:** Actor model, fault tolerance, "let it crash", supervision trees, BEAM VM.
 
 | Requirement | Library | Score | Notes |
-|------------|---------|-------|-------|
+| ------------ | --------- | ------- | ------- |
 | Subprocess mgmt | `Port.open/2` + GenServer | **4** | OTP process monitoring works. But killing OS subprocesses requires explicit port handling. No process groups. |
 | TUI framework | Ratatouille | **3** | Functional but small community. Depends on ex_termbox (native bindings). Far less mature than Bubble Tea or Ratatui. |
 | Distribution | Burrito (Mix release + Zig) | **2** | Works but: 80–150 MB binaries, first-run extraction delay, Zig build dependency, cross-compilation complexity. |
@@ -154,7 +154,7 @@ The criteria are weighted by importance to TEMPAD's success:
 ## 3. Requirement-by-Requirement Winner
 
 | Requirement | Winner | Runner-up | Notes |
-|------------|--------|-----------|-------|
+| ------------ | -------- | ----------- | ------- |
 | Subprocess mgmt | **Go = Rust** (tie) | Elixir | All three are solid; Go/Rust are slightly simpler |
 | TUI framework | **Go** (Bubble Tea) | Rust (Ratatui) | Bubble Tea is purpose-built and delightful |
 | Distribution | **Go = Rust** (tie) | Elixir (distant) | 5–15 MB vs 80–150 MB; instant vs extract |
@@ -173,7 +173,7 @@ The criteria are weighted by importance to TEMPAD's success:
 ## 4. Decision Matrix Summary
 
 | Stack | Critical (×3) | High (×2) | Medium (×1) | Low (×1) | Weighted Total |
-|-------|---------------|-----------|-------------|----------|---------------|
+| ------- | --------------- | ----------- | ------------- | ---------- | --------------- |
 | **Go** | 20 × 3 = 60 | 18 × 2 = 36 | 15 × 1 = 15 | 5 × 1 = 5 | **116** |
 | **Rust** | 18 × 3 = 54 | 15 × 2 = 30 | 15 × 1 = 15 | 2 × 1 = 2 | **101** |
 | **Elixir** | 14 × 3 = 42 | 17 × 2 = 34 | 13 × 1 = 13 | 4 × 1 = 4 | **93** |
@@ -208,7 +208,7 @@ The criteria are weighted by importance to TEMPAD's success:
 
 ## 6. Proposed Go Architecture Preview
 
-```
+```text
 tempad/
 ├── cmd/tempad/          # CLI entry point (Cobra)
 │   └── main.go
@@ -234,7 +234,7 @@ tempad/
 
 **Orchestrator as a struct with a run loop (not an actor):**
 
-```
+```go
 type Orchestrator struct {
     state    *RuntimeState
     tracker  tracker.Client
@@ -271,7 +271,7 @@ The TUI is a `tea.Program` that receives messages from the tracker (poll results
 ## 7. Risk Mitigations
 
 | Risk | Mitigation |
-|------|-----------|
+| ------ | ----------- |
 | Goroutine leaks | Wire `context.Context` through every goroutine. Use `goleak` in tests. |
 | No supervision trees | Use `recover()` in deferred functions. Log panics. Restart failed workers via retry loop. |
 | File watcher edge cases | Debounce with 500ms timer. Re-watch on rename events. |

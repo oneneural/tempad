@@ -6,7 +6,7 @@ An enhanced open-source alternative to [OpenAI's Symphony](https://github.com/op
 
 ## Repository Structure
 
-```
+```text
 tempad/                                  ← monorepo root
 ├── docs/                                ← language-agnostic specification & design docs
 │   ├── SPEC_v1.md                       ← behavioral spec — source of truth for WHAT
