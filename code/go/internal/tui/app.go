@@ -202,15 +202,4 @@ func (m Model) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// updateDetail handles messages when the detail view is active.
-// Placeholder — detail view added in T-P404.
-func (m Model) updateDetail(msg tea.Msg) (tea.Model, tea.Cmd) {
-	_ = msg
-	return m, nil
-}
-
-// viewDetail renders the detail view.
-// Placeholder — rendering added in T-P404.
-func (m Model) viewDetail() string {
-	return ""
-}
+// updateDetail and viewDetail are defined in detail.go.
