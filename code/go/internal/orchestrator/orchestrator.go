@@ -397,10 +397,11 @@ func (o *Orchestrator) applyNewConfig(cfg *config.ServiceConfig, ticker *time.Ti
 	ticker.Reset(newInterval)
 }
 
-// shutdown cleans up on exit: stop timers, release claims.
+// shutdown cleans up on exit: cancel workers, stop timers, release claims.
 func (o *Orchestrator) shutdown() {
+	runningCount := o.state.RunningCount()
 	o.logger.Info("orchestrator shutting down",
-		"running", o.state.RunningCount(),
+		"running", runningCount,
 		"claimed", len(o.state.Claimed),
 	)
 
@@ -408,6 +409,21 @@ func (o *Orchestrator) shutdown() {
 	for id, timer := range o.activeTimers {
 		timer.Stop()
 		delete(o.activeTimers, id)
+	}
+
+	// Cancel all running workers explicitly and wait for them to finish.
+	for id, cancel := range o.workerCancels {
+		cancel()
+		delete(o.workerCancels, id)
+	}
+
+	// Drain remaining worker results so goroutines can exit cleanly.
+	for i := 0; i < runningCount; i++ {
+		select {
+		case <-o.workerResults:
+		case <-time.After(5 * time.Second):
+			o.logger.Warn("timed out waiting for worker to finish")
+		}
 	}
 
 	// Release all claims (best effort).

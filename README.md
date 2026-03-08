@@ -3,7 +3,6 @@
 [![CI](https://github.com/oneneural/tempad/actions/workflows/ci.yml/badge.svg)](https://github.com/oneneural/tempad/actions/workflows/ci.yml)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/oneneural/tempad?filter=go/*&label=Go%20Release)](https://github.com/oneneural/tempad/releases)
 
 **Temporal Execution & Management Poll-Agent Dispatcher**
 

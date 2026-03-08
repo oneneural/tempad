@@ -1,8 +1,6 @@
 # TEMPAD — Go Implementation
 
 [![CI](https://github.com/oneneural/tempad/actions/workflows/ci.yml/badge.svg)](https://github.com/oneneural/tempad/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/oneneural/tempad)](https://goreportcard.com/report/github.com/oneneural/tempad)
-[![Release](https://img.shields.io/github/v/release/oneneural/tempad?filter=go/*&label=Latest)](https://github.com/oneneural/tempad/releases)
 
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
