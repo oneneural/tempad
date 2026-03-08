@@ -103,6 +103,12 @@ func (o *Orchestrator) ReloadConfig(cfg *config.ServiceConfig) {
 	}
 }
 
+// TriggerPoll forces an immediate poll cycle by reloading the current config,
+// which resets the ticker. Used by the HTTP refresh endpoint.
+func (o *Orchestrator) TriggerPoll() {
+	o.ReloadConfig(o.cfg)
+}
+
 // Run starts the orchestrator's main select loop. It blocks until the context
 // is canceled. The select loop handles:
 //   - ctx.Done: graceful shutdown

@@ -6,7 +6,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,7 +14,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/oneneural/tempad/internal/config"
+	"github.com/oneneural/tempad/internal/logging"
 	"github.com/oneneural/tempad/internal/orchestrator"
+	"github.com/oneneural/tempad/internal/server"
 	"github.com/oneneural/tempad/internal/tracker/linear"
 	"github.com/oneneural/tempad/internal/tui"
 	"github.com/oneneural/tempad/internal/workspace"
@@ -46,6 +47,9 @@ In daemon mode (--daemon), it auto-dispatches coding agents headlessly.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if cliFlags.Daemon {
 			return runDaemon()
+		}
+		if cliFlags.Port > 0 {
+			fmt.Fprintf(os.Stderr, "Warning: --port is only used in daemon mode (--daemon)\n")
 		}
 		return runTUI()
 	},
@@ -109,10 +113,11 @@ func runDaemon() error {
 	}
 
 	// Set up structured logger.
-	logLevel := parseLogLevel(cfg.LogLevel)
-	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		Level: logLevel,
-	}))
+	logger := logging.Setup(logging.Config{
+		Level: cfg.LogLevel,
+		File:  cfg.LogFile,
+		Mode:  "daemon",
+	})
 
 	// Create tracker client.
 	client := linear.NewLinearClient(linear.Config{
@@ -142,8 +147,18 @@ func runDaemon() error {
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	// Create and run orchestrator.
+	// Create orchestrator.
 	orch := orchestrator.New(cfg, client, ws, logger)
+
+	// Start HTTP server if --port is specified.
+	if cfg.ServerPort > 0 {
+		srv, err := server.New(cfg.ServerPort, orch, logger)
+		if err != nil {
+			return fmt.Errorf("HTTP server: %w", err)
+		}
+		go srv.Serve(ctx)
+		logger.Info("HTTP server started", "addr", srv.Addr())
+	}
 
 	logger.Info("daemon starting",
 		"poll_interval_ms", cfg.PollIntervalMs,
@@ -153,19 +168,6 @@ func runDaemon() error {
 	)
 
 	return orch.Run(ctx)
-}
-
-func parseLogLevel(level string) slog.Level {
-	switch level {
-	case "debug":
-		return slog.LevelDebug
-	case "warn":
-		return slog.LevelWarn
-	case "error":
-		return slog.LevelError
-	default:
-		return slog.LevelInfo
-	}
 }
 
 func init() {
