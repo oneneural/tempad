@@ -3,10 +3,12 @@ package tui
 
 import (
 	"context"
+	"os/exec"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 
+	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
 	"github.com/oneneural/tempad/internal/tracker"
@@ -42,6 +44,9 @@ type Model struct {
 
 	// Poll state
 	pollInFlight bool
+
+	// Selection flow state
+	claiming bool // true while claim→workspace→IDE is in progress
 
 	// UI state
 	width  int
@@ -99,6 +104,56 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.available = msg.Available
 		m.active = msg.Active
 		m.restoreCursor()
+		return m, nil
+
+	case ClaimResultMsg:
+		if msg.Err != nil {
+			m.claiming = false
+			m.err = msg.Err
+			m.status = "Claim failed"
+			return m, nil
+		}
+		m.status = "Preparing workspace..."
+		return m, m.prepareWorkspaceCmd(msg.Issue)
+
+	case WorkspaceReadyMsg:
+		if msg.Err != nil {
+			m.claiming = false
+			m.err = msg.Err
+			m.status = "Workspace error"
+			return m, nil
+		}
+		m.status = "Opening IDE..."
+		return m, m.openIDECmd(msg.Issue, msg.Workspace)
+
+	case IDEOpenedMsg:
+		m.claiming = false
+		if msg.Err != nil {
+			m.err = msg.Err
+			m.status = "IDE launch failed"
+			return m, nil
+		}
+		m.err = nil
+		m.status = "Opened in IDE"
+		// Trigger a refresh to update the board (issue is now assigned).
+		if !m.pollInFlight {
+			m.pollInFlight = true
+			return m, m.pollCmd()
+		}
+		return m, nil
+
+	case ReleaseResultMsg:
+		if msg.Err != nil {
+			m.err = msg.Err
+			m.status = "Release failed"
+			return m, nil
+		}
+		m.status = "Task released"
+		// Refresh to show updated board.
+		if !m.pollInFlight {
+			m.pollInFlight = true
+			return m, m.pollCmd()
+		}
 		return m, nil
 
 	case errMsg:
@@ -194,6 +249,55 @@ func (m Model) tickCmd() tea.Cmd {
 	return tea.Tick(interval, func(_ time.Time) tea.Msg {
 		return tickMsg{}
 	})
+}
+
+// claimCmd creates a tea.Cmd that claims an issue.
+func (m Model) claimCmd(issue domain.Issue) tea.Cmd {
+	client := m.tracker
+	ctx := m.ctx
+	identity := m.cfg.TrackerIdentity
+	return func() tea.Msg {
+		err := claim.Claim(ctx, client, issue.ID, identity)
+		return ClaimResultMsg{Issue: issue, Err: err}
+	}
+}
+
+// prepareWorkspaceCmd creates a tea.Cmd that prepares a workspace for an issue.
+func (m Model) prepareWorkspaceCmd(issue domain.Issue) tea.Cmd {
+	ws := m.ws
+	ctx := m.ctx
+	hooks := workspace.HookConfig{
+		AfterCreate: m.cfg.AfterCreateHook,
+		BeforeRun:   m.cfg.BeforeRunHook,
+		TimeoutMs:   m.cfg.HookTimeoutMs,
+	}
+	return func() tea.Msg {
+		w, err := ws.Prepare(ctx, issue, hooks)
+		if err != nil {
+			return WorkspaceReadyMsg{Issue: issue, Err: err}
+		}
+		return WorkspaceReadyMsg{Issue: issue, Workspace: *w}
+	}
+}
+
+// openIDECmd creates a tea.Cmd that launches the IDE for the workspace.
+func (m Model) openIDECmd(issue domain.Issue, ws domain.Workspace) tea.Cmd {
+	ideCmd := m.cfg.IDECommand
+	ideArgs := m.cfg.IDEArgs
+	path := ws.Path
+	return func() tea.Msg {
+		cmdStr := ideCmd
+		if ideArgs != "" {
+			cmdStr += " " + ideArgs
+		}
+		cmdStr += " " + path
+
+		cmd := exec.Command("bash", "-lc", cmdStr)
+		if err := cmd.Start(); err != nil {
+			return IDEOpenedMsg{Issue: issue, Err: err}
+		}
+		return IDEOpenedMsg{Issue: issue}
+	}
 }
 
 // updateBoard is defined in keys.go.
