@@ -2,11 +2,6 @@
 
 version: 2
 
-# Monorepo: this config lives in code/go/ and only processes go/v* tags.
-monorepo:
-  tag_prefix: go/
-  dir: code/go
-
 project_name: tempad
 
 env:
@@ -46,7 +41,7 @@ archives:
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
     files:
-      - src: LICENSE
+      - src: ../../LICENSE
         strip_parent: true
       - src: README.md
         strip_parent: true
