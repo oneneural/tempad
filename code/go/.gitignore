@@ -1,5 +1,5 @@
 # Binaries
-tempad
+/tempad
 *.exe
 *.exe~
 *.dll
