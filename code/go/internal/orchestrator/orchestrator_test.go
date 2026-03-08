@@ -69,3 +69,48 @@ func TestState(t *testing.T) {
 	assert.NotNil(t, state)
 	assert.Equal(t, 3, state.MaxConcurrentAgents)
 }
+
+func TestApplyNewConfig(t *testing.T) {
+	o := New(testConfig(), nil, nil, testLogger())
+
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	newCfg := &config.ServiceConfig{PollIntervalMs: 5000, MaxConcurrent: 10}
+	o.applyNewConfig(newCfg, ticker)
+
+	assert.Equal(t, 5000, o.state.PollIntervalMs)
+	assert.Equal(t, 10, o.state.MaxConcurrentAgents)
+	assert.Equal(t, newCfg, o.cfg)
+}
+
+func TestHandleRetry_ContextCanceled(t *testing.T) {
+	o := New(testConfig(), nil, nil, testLogger())
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Already canceled.
+
+	// Should not panic or do anything.
+	o.handleRetry(ctx, RetrySignal{IssueID: "id-1", Identifier: "PROJ-1", Attempt: 1})
+}
+
+func TestWorkerResultChannel(t *testing.T) {
+	o := New(testConfig(), nil, nil, testLogger())
+
+	// Send a worker result.
+	o.workerResults <- WorkerResult{
+		IssueID:    "id-1",
+		Identifier: "PROJ-1",
+		ExitCode:   0,
+		Duration:   5 * time.Second,
+	}
+
+	// Should receive it.
+	select {
+	case r := <-o.workerResults:
+		assert.Equal(t, "PROJ-1", r.Identifier)
+		assert.Equal(t, 0, r.ExitCode)
+	default:
+		t.Fatal("expected result on channel")
+	}
+}
