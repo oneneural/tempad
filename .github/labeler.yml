@@ -1,0 +1,71 @@
+# PR auto-labeling rules for actions/labeler
+# Labels are applied based on changed file paths and branch names
+
+go:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/**/*.go"
+      - "code/go/go.mod"
+      - "code/go/go.sum"
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - ".github/**"
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/*.md"
+      - "docs/**"
+      - "code/go/docs/**"
+
+cli:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/cmd/**"
+
+config:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/internal/config/**"
+
+tracker:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/internal/tracker/**"
+
+workspace:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/internal/workspace/**"
+
+tui:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/internal/tui/**"
+
+orchestrator:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/internal/orchestrator/**"
+
+server:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/internal/server/**"
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "code/go/**/*_test.go"
+      - "code/go/test/**"
+
+feature:
+  - head-branch: ["^feat/"]
+
+bugfix:
+  - head-branch: ["^fix/"]
+
+refactor:
+  - head-branch: ["^refactor/"]
