@@ -149,3 +149,60 @@ func (m *Manager) Prepare(ctx context.Context, issue domain.Issue, hooks HookCon
 		CreatedNow:   isNew,
 	}, nil
 }
+
+// CleanForIssue removes the workspace directory for a specific issue identifier.
+// Returns nil if the workspace doesn't exist.
+func (m *Manager) CleanForIssue(identifier string) error {
+	wsPath, err := m.ResolvePath(identifier)
+	if err != nil {
+		return fmt.Errorf("resolve path for cleanup: %w", err)
+	}
+
+	// Re-verify containment before removal.
+	if err := m.verifyContainment(wsPath); err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(wsPath); os.IsNotExist(err) {
+		return nil // Nothing to clean.
+	}
+
+	if err := os.RemoveAll(wsPath); err != nil {
+		return fmt.Errorf("remove workspace %q: %w", identifier, err)
+	}
+
+	return nil
+}
+
+// CleanTerminal removes workspace directories for issues in terminal states.
+// Returns a count of cleaned workspaces and any errors encountered.
+func (m *Manager) CleanTerminal(issues []domain.Issue) (int, error) {
+	cleaned := 0
+	var errs []string
+
+	for _, issue := range issues {
+		if err := m.CleanForIssue(issue.Identifier); err != nil {
+			errs = append(errs, fmt.Sprintf("%s: %v", issue.Identifier, err))
+			continue
+		}
+		cleaned++
+	}
+
+	if len(errs) > 0 {
+		return cleaned, fmt.Errorf("cleanup errors: %s", strings.Join(errs, "; "))
+	}
+
+	return cleaned, nil
+}
+
+// verifyContainment checks that a path is inside the workspace root.
+func (m *Manager) verifyContainment(path string) error {
+	rel, err := filepath.Rel(m.root, path)
+	if err != nil {
+		return fmt.Errorf("path containment check failed: %w", err)
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("refusing to remove %q: outside workspace root", path)
+	}
+	return nil
+}
