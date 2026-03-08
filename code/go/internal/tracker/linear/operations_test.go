@@ -177,14 +177,41 @@ func TestFetchIssuesByStates(t *testing.T) {
 }
 
 func TestFetchIssueStatesByIDs(t *testing.T) {
-	srv := mockServer(t, map[string]any{
-		"data": map[string]any{
-			"nodes": []map[string]any{
-				{"id": "id-1", "state": map[string]any{"name": "In Progress"}},
-				{"id": "id-2", "state": map[string]any{"name": "Done"}},
+	// FetchIssueStatesByIDs now fetches each issue individually via singleIssueQuery.
+	// Use a request-aware mock that returns different responses per issue ID.
+	callCount := 0
+	responses := []map[string]any{
+		{
+			"data": map[string]any{
+				"issue": map[string]any{
+					"id": "id-1", "identifier": "T-1", "title": "Task 1",
+					"state":     map[string]any{"name": "In Progress"},
+					"labels":    map[string]any{"nodes": []any{}},
+					"relations": map[string]any{"nodes": []any{}},
+					"createdAt": "2026-03-08T12:00:00Z", "updatedAt": "2026-03-08T12:00:00Z",
+				},
 			},
 		},
-	})
+		{
+			"data": map[string]any{
+				"issue": map[string]any{
+					"id": "id-2", "identifier": "T-2", "title": "Task 2",
+					"state":     map[string]any{"name": "Done"},
+					"labels":    map[string]any{"nodes": []any{}},
+					"relations": map[string]any{"nodes": []any{}},
+					"createdAt": "2026-03-08T12:00:00Z", "updatedAt": "2026-03-08T12:00:00Z",
+				},
+			},
+		},
+	}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		idx := callCount
+		if idx >= len(responses) {
+			idx = len(responses) - 1
+		}
+		callCount++
+		json.NewEncoder(w).Encode(responses[idx])
+	}))
 	defer srv.Close()
 
 	c := NewLinearClient(Config{Endpoint: srv.URL, APIKey: "key"})

@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"sync/atomic"
 	"time"
 
@@ -48,13 +50,17 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 
 	// 2. Render prompt.
 	log.Info("rendering prompt")
-	promptTemplate := "Work on issue {{ issue.identifier }}: {{ issue.title }}"
-	// Use workflow prompt if available.
-	rendered, err := o.builder.Render(promptTemplate, issue, &attempt)
+	rendered, err := o.builder.Render(o.cfg.PromptTemplate, issue, &attempt)
 	if err != nil {
 		result.Err = fmt.Errorf("prompt render: %w", err)
 		result.ExitCode = 1
 		return
+	}
+
+	// 2b. Write TEMPAD_TASK.md to workspace for agent/IDE context.
+	taskFilePath := filepath.Join(ws.Path, "TEMPAD_TASK.md")
+	if writeErr := os.WriteFile(taskFilePath, []byte(rendered), 0644); writeErr != nil {
+		log.Warn("failed to write TEMPAD_TASK.md", "error", writeErr)
 	}
 
 	// 3. Build env vars.
@@ -67,13 +73,15 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 		"TEMPAD_ATTEMPT":          fmt.Sprintf("%d", attempt),
 	}
 
-	// 4. Launch agent.
+	// 4. Launch agent with a short reference prompt pointing to TEMPAD_TASK.md.
+	// The full rendered prompt is already written to TEMPAD_TASK.md in the workspace.
+	refPrompt := fmt.Sprintf("Read and follow TEMPAD_TASK.md in the current directory. You are working on %s: %s", issue.Identifier, issue.Title)
 	log.Info("launching agent")
 	handle, err := o.launcher.Launch(ctx, agent.LaunchOpts{
 		Command:       o.cfg.AgentCommand,
 		Args:          o.cfg.AgentArgs,
 		WorkspacePath: ws.Path,
-		Prompt:        rendered,
+		Prompt:        refPrompt,
 		PromptMethod:  o.cfg.PromptDelivery,
 		Env:           env,
 	})

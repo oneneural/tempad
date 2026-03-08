@@ -59,6 +59,9 @@ type ServiceConfig struct {
 
 	// Internal: path to the workflow file (for hot reload).
 	WorkflowPath string `json:"-"`
+
+	// Internal: prompt template body from WORKFLOW.md (for IDE agent context).
+	PromptTemplate string `json:"-"`
 }
 
 // CLIFlags holds command-line overrides. These have highest precedence.

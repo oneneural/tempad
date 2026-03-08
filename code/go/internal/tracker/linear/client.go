@@ -76,7 +76,7 @@ func (c *LinearClient) do(ctx context.Context, query string, vars map[string]any
 		return &tracker.APIRequestError{Message: "create request", Cause: err}
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+	req.Header.Set("Authorization", c.apiKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

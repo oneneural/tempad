@@ -83,8 +83,13 @@ func runTUI() error {
 		return fmt.Errorf("workspace manager: %w", err)
 	}
 
-	// Startup terminal workspace cleanup.
+	// Resolve tracker identity for claim operations.
 	ctx := context.Background()
+	if err := client.ResolveIdentity(ctx); err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: failed to resolve tracker identity: %v\n", err)
+	}
+
+	// Startup terminal workspace cleanup.
 	if terminalIssues, fetchErr := client.FetchIssuesByStates(ctx, cfg.TerminalStates); fetchErr == nil {
 		if cleaned, cleanErr := ws.CleanTerminal(terminalIssues); cleanErr == nil && cleaned > 0 {
 			fmt.Fprintf(os.Stderr, "Cleaned %d terminal workspaces\n", cleaned)
@@ -135,8 +140,13 @@ func runDaemon() error {
 		return fmt.Errorf("workspace manager: %w", err)
 	}
 
-	// Startup terminal workspace cleanup.
+	// Resolve tracker identity for "assigned to me" queries.
 	ctx := context.Background()
+	if err := client.ResolveIdentity(ctx); err != nil {
+		logger.Warn("failed to resolve tracker identity, assigned-to-me queries disabled", "error", err)
+	}
+
+	// Startup terminal workspace cleanup.
 	if terminalIssues, fetchErr := client.FetchIssuesByStates(ctx, cfg.TerminalStates); fetchErr == nil {
 		if cleaned, cleanErr := ws.CleanTerminal(terminalIssues); cleanErr == nil && cleaned > 0 {
 			logger.Info("cleaned terminal workspaces", "count", cleaned)

@@ -215,5 +215,10 @@ func Load(cli *CLIFlags) (*ServiceConfig, *WorkflowDefinition, error) {
 		cfg.WorkflowPath = "WORKFLOW.md"
 	}
 
+	// Store the prompt template for IDE agent context.
+	if workflow != nil {
+		cfg.PromptTemplate = workflow.PromptTemplate
+	}
+
 	return cfg, workflow, nil
 }

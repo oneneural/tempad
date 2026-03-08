@@ -15,7 +15,7 @@ import (
 func TestDo_Success(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Verify headers.
-		if r.Header.Get("Authorization") != "Bearer test-key" {
+		if r.Header.Get("Authorization") != "test-key" {
 			t.Error("missing or wrong Authorization header")
 		}
 		if r.Header.Get("Content-Type") != "application/json" {

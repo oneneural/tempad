@@ -2,7 +2,7 @@
 package linear
 
 // GraphQL query and mutation string constants for Linear API operations.
-// CRITICAL: All project filters use `project.slug` (NOT `slugId` — deprecated).
+// Project filters use `project.slugId` for Linear's GraphQL API.
 
 // candidateIssuesQuery fetches unassigned issues in active states for a project.
 // Uses cursor-based pagination with first/after.
@@ -10,7 +10,7 @@ const candidateIssuesQuery = `
 query CandidateIssues($projectSlug: String!, $states: [String!]!, $first: Int!, $after: String) {
   issues(
     filter: {
-      project: { slug: { eq: $projectSlug } }
+      project: { slugId: { eq: $projectSlug } }
       state: { name: { in: $states } }
       assignee: { null: true }
     }
@@ -31,10 +31,10 @@ query CandidateIssues($projectSlug: String!, $states: [String!]!, $first: Int!, 
 
 // assignedToMeQuery fetches issues assigned to a specific user (for resumption).
 const assignedToMeQuery = `
-query AssignedToMe($projectSlug: String!, $states: [String!]!, $userID: String!, $first: Int!, $after: String) {
+query AssignedToMe($projectSlug: String!, $states: [String!]!, $userID: ID!, $first: Int!, $after: String) {
   issues(
     filter: {
-      project: { slug: { eq: $projectSlug } }
+      project: { slugId: { eq: $projectSlug } }
       state: { name: { in: $states } }
       assignee: { id: { eq: $userID } }
     }
@@ -58,7 +58,7 @@ const issuesByStatesQuery = `
 query IssuesByStates($projectSlug: String!, $states: [String!]!, $first: Int!, $after: String) {
   issues(
     filter: {
-      project: { slug: { eq: $projectSlug } }
+      project: { slugId: { eq: $projectSlug } }
       state: { name: { in: $states } }
     }
     first: $first

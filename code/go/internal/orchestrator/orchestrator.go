@@ -181,6 +181,11 @@ func (o *Orchestrator) tick(ctx context.Context) {
 		return
 	}
 
+	o.logger.Debug("fetched candidates", "total", len(issues))
+	for _, iss := range issues {
+		o.logger.Debug("candidate", "identifier", iss.Identifier, "title", iss.Title, "state", iss.State, "assignee", iss.Assignee)
+	}
+
 	candidates := o.selectCandidates(issues)
 	o.dispatch(ctx, candidates)
 }
