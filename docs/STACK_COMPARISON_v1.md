@@ -1,7 +1,7 @@
 # TEMPAD Tech Stack Comparison & Recommendation
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Date** | 2026-03-07 |
 | **Authors** | Subodh / Claude |
@@ -56,6 +56,7 @@ The criteria are weighted by importance to TEMPAD's success:
 **Go Total: 58/60**
 
 **Go's Killer Advantages for TEMPAD:**
+
 - Bubble Tea is arguably the best TUI framework in any language — purpose-built, mature, beautiful defaults
 - Distribution is trivial: `GOOS=darwin GOARCH=arm64 go build -o tempad` and ship
 - `os/exec` + goroutines is the exact concurrency model TEMPAD needs (poll loop in one goroutine, each agent worker in another, retry timers via `time.AfterFunc`)
@@ -64,6 +65,7 @@ The criteria are weighted by importance to TEMPAD's success:
 - Fast compile-test cycle accelerates development
 
 **Go's Weaknesses:**
+
 - No sum types / pattern matching — error handling is verbose
 - No generics until Go 1.18 (now available but ecosystem still catching up)
 - Goroutine leaks require discipline (always wire `context.Done()`)
@@ -93,6 +95,7 @@ The criteria are weighted by importance to TEMPAD's success:
 **Rust Total: 50/60**
 
 **Rust's Killer Advantages for TEMPAD:**
+
 - Zero-cost abstractions mean the daemon mode orchestrator would be extremely efficient
 - Compile-time safety catches concurrency bugs before runtime
 - `tracing` is the gold standard for structured observability
@@ -100,6 +103,7 @@ The criteria are weighted by importance to TEMPAD's success:
 - Type system prevents entire classes of bugs (null safety, exhaustive matching)
 
 **Rust's Weaknesses:**
+
 - **Liquid strict mode is missing** — this is a spec requirement and would need a custom solution
 - Development velocity is 2–3x slower than Go for a project of this complexity
 - Tokio's `'static` lifetime requirements make the orchestrator state machine harder to express
@@ -131,6 +135,7 @@ The criteria are weighted by importance to TEMPAD's success:
 **Elixir Total: 48/60**
 
 **Elixir's Killer Advantages for TEMPAD:**
+
 - OTP supervision trees are the **ideal** concurrency model for daemon mode — each agent worker is a supervised process, the orchestrator is a GenServer, retry timers are `Process.send_after/3`
 - Symphony already proved this architecture works in production
 - Solid (Liquid engine) has native strict mode — spec requirement satisfied
@@ -138,6 +143,7 @@ The criteria are weighted by importance to TEMPAD's success:
 - "Let it crash" philosophy matches TEMPAD's failure model perfectly
 
 **Elixir's Weaknesses:**
+
 - **Distribution is the critical weakness.** Burrito produces 80–150 MB binaries with first-run extraction. Go/Rust produce 5–20 MB binaries that run instantly. For a developer tool that people download and run, this matters enormously.
 - **Ratatouille is the weakest TUI option.** Small community, native dependency on ex_termbox, fewer widgets, less documentation. Bubble Tea and Ratatui are far ahead.
 - Niche language — harder to attract contributors to an open-source project
@@ -227,6 +233,7 @@ tempad/
 ### Key Architectural Decisions
 
 **Orchestrator as a struct with a run loop (not an actor):**
+
 ```
 type Orchestrator struct {
     state    *RuntimeState

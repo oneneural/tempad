@@ -1,7 +1,7 @@
 # TEMPAD vs Symphony: Gap Analysis & Feasibility Assessment
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Date** | 2026-03-08 |
 
@@ -57,6 +57,7 @@ These are the right things to drop for an agent-agnostic design.
 ### 3.1 TUI Mode — FEASIBLE
 
 **What it needs:**
+
 - Terminal UI library (e.g., Ratatui/Rust, Bubble Tea/Go, tui-rs, Ink/Node, Ratatouille/Elixir)
 - Live task board with polling refresh
 - Keyboard navigation and selection
@@ -70,6 +71,7 @@ These are the right things to drop for an agent-agnostic design.
 ### 3.2 Assignment-Based Distributed Claiming — FEASIBLE
 
 **What it needs:**
+
 - `assign_issue(issue_id, identity)` tracker operation
 - `unassign_issue(issue_id)` tracker operation
 - `fetch_issue(issue_id)` for post-assignment verification
@@ -84,6 +86,7 @@ These are the right things to drop for an agent-agnostic design.
 ### 3.3 Split Configuration (Repo + User) — FEASIBLE
 
 **What it needs:**
+
 - YAML parser for `~/.tempad/config.yaml`
 - Merge logic: CLI > user config > repo config > env vars > defaults
 - Clear ownership rules (user owns IDE/agent/identity, repo owns hooks/states/workspace)
@@ -95,6 +98,7 @@ These are the right things to drop for an agent-agnostic design.
 ### 3.4 `tempad init` / `tempad validate` / `tempad clean` — FEASIBLE
 
 **What they need:**
+
 - `init`: Write a default `~/.tempad/config.yaml` template
 - `validate`: Load config + workflow, run preflight checks, print results
 - `clean`: Query tracker for terminal issues, remove matching workspace dirs
@@ -106,6 +110,7 @@ These are the right things to drop for an agent-agnostic design.
 ### 3.5 Four Prompt Delivery Methods — FEASIBLE
 
 **What they need:**
+
 - `file`: Write to `<workspace>/PROMPT.md`, pass path as arg (already similar to Symphony)
 - `stdin`: Pipe rendered prompt to subprocess stdin
 - `arg`: Pass as CLI argument (beware shell escaping / ARG_MAX limits)

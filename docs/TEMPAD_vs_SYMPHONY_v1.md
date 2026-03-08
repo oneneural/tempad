@@ -1,7 +1,7 @@
 # T.E.M.P.A.D. vs Symphony — Feature Comparison
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Date** | 2026-03-08 |
 

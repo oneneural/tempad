@@ -3,7 +3,7 @@
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Status** | Draft (language-agnostic) |
 | **Date** | 2026-03-08 |
