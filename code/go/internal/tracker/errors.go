@@ -67,6 +67,15 @@ func (e *APIErrorsError) Error() string {
 	return fmt.Sprintf("tracker API GraphQL errors: %v", e.Errors)
 }
 
+// RateLimitError indicates the API rate limit has been exceeded.
+type RateLimitError struct {
+	RetryAfterSecs int
+}
+
+func (e *RateLimitError) Error() string {
+	return fmt.Sprintf("tracker API rate limit exceeded, retry after %d seconds", e.RetryAfterSecs)
+}
+
 // ClaimConflictError indicates the issue was claimed by someone else.
 type ClaimConflictError struct {
 	IssueID        string
