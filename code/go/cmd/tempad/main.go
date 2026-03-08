@@ -88,7 +88,7 @@ func runTUI() error {
 	}
 
 	// Create and run Bubble Tea program.
-	model := tui.NewModel(ctx, cfg, client, ws)
+	model := tui.NewModel(ctx, cfg, client, ws, nil)
 	p := tea.NewProgram(model, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		return fmt.Errorf("TUI error: %w", err)

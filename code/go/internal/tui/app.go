@@ -54,27 +54,36 @@ type Model struct {
 	err    error
 	status string // transient status message
 
+	// Hot reload
+	reloadCh <-chan *config.ServiceConfig
+
 	// Context for cancellation
 	ctx context.Context
 }
 
 // NewModel creates a new TUI model with the given dependencies.
-func NewModel(ctx context.Context, cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager) Model {
+// reloadCh is optional — pass nil if hot reload is not enabled.
+func NewModel(ctx context.Context, cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager, reloadCh <-chan *config.ServiceConfig) Model {
 	return Model{
-		cfg:     cfg,
-		tracker: client,
-		ws:      ws,
-		view:    viewBoard,
-		ctx:     ctx,
+		cfg:      cfg,
+		tracker:  client,
+		ws:       ws,
+		view:     viewBoard,
+		reloadCh: reloadCh,
+		ctx:      ctx,
 	}
 }
 
 // Init implements tea.Model. Fires an initial poll.
 func (m Model) Init() tea.Cmd {
-	return tea.Batch(
+	cmds := []tea.Cmd{
 		m.pollCmd(),
 		m.tickCmd(),
-	)
+	}
+	if m.reloadCh != nil {
+		cmds = append(cmds, m.waitForReloadCmd())
+	}
+	return tea.Batch(cmds...)
 }
 
 // Update implements tea.Model.
@@ -155,6 +164,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.pollCmd()
 		}
 		return m, nil
+
+	case ConfigReloadMsg:
+		if msg.Err != nil {
+			m.status = "Config reload error"
+			m.err = msg.Err
+		} else {
+			m.cfg = msg.Cfg
+			m.status = "Config reloaded"
+			m.err = nil
+		}
+		// Re-listen for next reload.
+		var cmd tea.Cmd
+		if m.reloadCh != nil {
+			cmd = m.waitForReloadCmd()
+		}
+		return m, cmd
 
 	case errMsg:
 		m.err = msg.err
@@ -307,6 +332,18 @@ func (m Model) releaseCmd(issueID string) tea.Cmd {
 	return func() tea.Msg {
 		err := claim.Release(ctx, client, issueID)
 		return ReleaseResultMsg{IssueID: issueID, Err: err}
+	}
+}
+
+// waitForReloadCmd listens for a config reload from the file watcher.
+func (m Model) waitForReloadCmd() tea.Cmd {
+	ch := m.reloadCh
+	return func() tea.Msg {
+		cfg, ok := <-ch
+		if !ok {
+			return nil
+		}
+		return ConfigReloadMsg{Cfg: cfg}
 	}
 }
 
