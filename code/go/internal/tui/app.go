@@ -300,5 +300,15 @@ func (m Model) openIDECmd(issue domain.Issue, ws domain.Workspace) tea.Cmd {
 	}
 }
 
+// releaseCmd creates a tea.Cmd that releases a claimed issue.
+func (m Model) releaseCmd(issueID string) tea.Cmd {
+	client := m.tracker
+	ctx := m.ctx
+	return func() tea.Msg {
+		err := claim.Release(ctx, client, issueID)
+		return ReleaseResultMsg{IssueID: issueID, Err: err}
+	}
+}
+
 // updateBoard is defined in keys.go.
 // updateDetail and viewDetail are defined in detail.go.
