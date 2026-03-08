@@ -1,6 +1,6 @@
 # Phase 5: Daemon Mode Orchestrator
 
-**Status:** 🔲 PENDING
+**Status:** ✅ COMPLETE
 **Tickets:** T-P500 to T-P513 (14 tickets)
 **Prerequisites:** Phase 2 (tracker client), Phase 3 (workspace manager)
 **Goal:** `tempad --daemon` runs fully autonomous: poll → claim → dispatch → monitor → retry → reconcile.
@@ -23,20 +23,20 @@
 
 | # | Ticket | Task | Status | File | Deps |
 | --- | -------- | ------ | -------- | ------ | ------ |
-| 1 | T-P500 | Orchestrator runtime state | 🔲 Todo | `p5-00-orchestrator-state.md` | T-P101, T-P200, T-P300, T-P400 |
-| 2 | T-P501 | Orchestrator main select loop | 🔲 Todo | `p5-01-select-loop.md` | T-P500 |
-| 3 | T-P502 | Candidate selection and sorting | 🔲 Todo | `p5-02-candidate-selection.md` | T-P101 |
-| 4 | T-P503 | Concurrency control | 🔲 Todo | `p5-03-concurrency-control.md` | T-P502 |
-| 5 | T-P504 | Dispatch loop (claim + spawn) | 🔲 Todo | `p5-04-dispatch-loop.md` | T-P503, T-P400 |
-| 6 | T-P505 | Agent worker goroutine | 🔲 Todo | `p5-05-worker-goroutine.md` | T-P302, T-P108, T-P506 |
-| 7 | T-P506 | Prompt delivery (4 methods) | 🔲 Todo | `p5-06-prompt-delivery.md` | T-P100 |
-| 8 | T-P507 | Agent subprocess launcher | 🔲 Todo | `p5-07-agent-launcher.md` | T-P506 |
-| 9 | T-P508 | Agent output + stall detection | 🔲 Todo | `p5-08-output-stall.md` | T-P507 |
-| 10 | T-P509 | Worker exit handling | 🔲 Todo | `p5-09-worker-exit.md` | T-P501, T-P510 |
-| 11 | T-P510 | Retry scheduling and backoff | 🔲 Todo | `p5-10-retry-backoff.md` | T-P501 |
-| 12 | T-P511 | Active run reconciliation | 🔲 Todo | `p5-11-reconciliation.md` | T-P508, T-P303 |
-| 13 | T-P512 | Daemon mode entry point | 🔲 Todo | `p5-12-daemon-entrypoint.md` | T-P501–T-P511 |
-| 14 | T-P513 | Daemon integration test | 🔲 Todo | `p5-13-daemon-integration.md` | T-P512 |
+| 1 | T-P500 | Orchestrator runtime state | ✅ Done | `p5-00-orchestrator-state.md` | T-P101, T-P200, T-P300, T-P400 |
+| 2 | T-P501 | Orchestrator main select loop | ✅ Done | `p5-01-select-loop.md` | T-P500 |
+| 3 | T-P502 | Candidate selection and sorting | ✅ Done | `p5-02-candidate-selection.md` | T-P101 |
+| 4 | T-P503 | Concurrency control | ✅ Done | `p5-03-concurrency-control.md` | T-P502 |
+| 5 | T-P504 | Dispatch loop (claim + spawn) | ✅ Done | `p5-04-dispatch-loop.md` | T-P503, T-P400 |
+| 6 | T-P505 | Agent worker goroutine | ✅ Done | `p5-05-worker-goroutine.md` | T-P302, T-P108, T-P506 |
+| 7 | T-P506 | Prompt delivery (4 methods) | ✅ Done | `p5-06-prompt-delivery.md` | T-P100 |
+| 8 | T-P507 | Agent subprocess launcher | ✅ Done | `p5-07-agent-launcher.md` | T-P506 |
+| 9 | T-P508 | Agent output + stall detection | ✅ Done | `p5-08-output-stall.md` | T-P507 |
+| 10 | T-P509 | Worker exit handling | ✅ Done | `p5-09-worker-exit.md` | T-P501, T-P510 |
+| 11 | T-P510 | Retry scheduling and backoff | ✅ Done | `p5-10-retry-backoff.md` | T-P501 |
+| 12 | T-P511 | Active run reconciliation | ✅ Done | `p5-11-reconciliation.md` | T-P508, T-P303 |
+| 13 | T-P512 | Daemon mode entry point | ✅ Done | `p5-12-daemon-entrypoint.md` | T-P501–T-P511 |
+| 14 | T-P513 | Daemon integration test | ✅ Done | `p5-13-daemon-integration.md` | T-P512 |
 
 ## Dependency Order
 

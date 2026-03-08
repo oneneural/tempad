@@ -1,6 +1,6 @@
 # Phase 3: Workspace Manager + Hooks
 
-**Status:** 🔲 PENDING
+**Status:** ✅ COMPLETE
 **Tickets:** T-P300 to T-P304 (5 tickets)
 **Prerequisites:** Phase 1 (complete). Phase 2 needed only for T-P304 (tracker-based clean).
 **Goal:** Deterministic workspace creation, hook execution, safety invariants, cleanup.
@@ -20,11 +20,11 @@
 
 | # | Ticket | Task | Status | File | Deps |
 | --- | -------- | ------ | -------- | ------ | ------ |
-| 1 | T-P300 | Workspace path resolution and safety | 🔲 Todo | `p3-00-workspace-paths.md` | T-P101 |
-| 2 | T-P301 | Hook execution engine | 🔲 Todo | `p3-01-hook-execution.md` | T-P100 |
-| 3 | T-P302 | Workspace Prepare lifecycle | 🔲 Todo | `p3-02-workspace-prepare.md` | T-P300, T-P301 |
-| 4 | T-P303 | Workspace cleanup (terminal + manual) | 🔲 Todo | `p3-03-workspace-cleanup.md` | T-P300, T-P301 |
-| 5 | T-P304 | `tempad clean` CLI commands | 🔲 Todo | `p3-04-clean-cli.md` | T-P303, T-P204 |
+| 1 | T-P300 | Workspace path resolution and safety | ✅ Done | `p3-00-workspace-paths.md` | T-P101 |
+| 2 | T-P301 | Hook execution engine | ✅ Done | `p3-01-hook-execution.md` | T-P100 |
+| 3 | T-P302 | Workspace Prepare lifecycle | ✅ Done | `p3-02-workspace-prepare.md` | T-P300, T-P301 |
+| 4 | T-P303 | Workspace cleanup (terminal + manual) | ✅ Done | `p3-03-workspace-cleanup.md` | T-P300, T-P301 |
+| 5 | T-P304 | `tempad clean` CLI commands | ✅ Done | `p3-04-clean-cli.md` | T-P303, T-P204 |
 
 ## Dependency Order
 

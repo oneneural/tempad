@@ -1,6 +1,6 @@
 # Phase 8: Testing + Hardening
 
-**Status:** 🔲 PENDING
+**Status:** ✅ COMPLETE
 **Tickets:** T-P800 to T-P805 (6 tickets)
 **Prerequisites:** All previous phases
 **Goal:** Full test coverage, race detection, goroutine leak prevention, production readiness.
@@ -20,12 +20,12 @@
 
 | # | Ticket | Task | Status | File | Deps |
 | --- | -------- | ------ | -------- | ------ | ------ |
-| 1 | T-P800 | Unit test coverage for all packages | 🔲 Todo | `p8-00-unit-tests.md` | All phases |
-| 2 | T-P801 | Race condition detection | 🔲 Todo | `p8-01-race-detection.md` | T-P800 |
-| 3 | T-P802 | Goroutine leak detection | 🔲 Todo | `p8-02-goroutine-leaks.md` | T-P800 |
-| 4 | T-P803 | End-to-end integration test | 🔲 Todo | `p8-03-e2e-test.md` | All phases |
-| 5 | T-P804 | Signal handling verification | 🔲 Todo | `p8-04-signal-handling.md` | T-P512 |
-| 6 | T-P805 | Real Linear smoke test | 🔲 Todo | `p8-05-linear-smoke.md` | All phases |
+| 1 | T-P800 | Unit test coverage for all packages | ✅ Done | `p8-00-unit-tests.md` | All phases |
+| 2 | T-P801 | Race condition detection | ✅ Done | `p8-01-race-detection.md` | T-P800 |
+| 3 | T-P802 | Goroutine leak detection | ✅ Done | `p8-02-goroutine-leaks.md` | T-P800 |
+| 4 | T-P803 | End-to-end integration test | ✅ Done | `p8-03-e2e-test.md` | All phases |
+| 5 | T-P804 | Signal handling verification | ✅ Done | `p8-04-signal-handling.md` | T-P512 |
+| 6 | T-P805 | Real Linear smoke test | ✅ Done | `p8-05-linear-smoke.md` | All phases |
 
 ## Dependency Order
 

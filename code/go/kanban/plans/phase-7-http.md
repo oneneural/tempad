@@ -1,6 +1,6 @@
 # Phase 7: HTTP Server Extension
 
-**Status:** 🔲 PENDING
+**Status:** ✅ COMPLETE
 **Tickets:** T-P700 to T-P702 (3 tickets)
 **Prerequisites:** Phase 5 (Daemon orchestrator)
 **Goal:** Optional `--port` enables REST API and dashboard for daemon mode observability.
@@ -20,9 +20,9 @@
 
 | # | Ticket | Task | Status | File | Deps |
 | --- | -------- | ------ | -------- | ------ | ------ |
-| 1 | T-P700 | HTTP server setup and lifecycle | 🔲 Todo | `p7-00-http-server.md` | T-P501 |
-| 2 | T-P701 | API endpoints | 🔲 Todo | `p7-01-api-endpoints.md` | T-P700 |
-| 3 | T-P702 | HTTP server CLI integration | 🔲 Todo | `p7-02-http-cli.md` | T-P701, T-P512 |
+| 1 | T-P700 | HTTP server setup and lifecycle | ✅ Done | `p7-00-http-server.md` | T-P501 |
+| 2 | T-P701 | API endpoints | ✅ Done | `p7-01-api-endpoints.md` | T-P700 |
+| 3 | T-P702 | HTTP server CLI integration | ✅ Done | `p7-02-http-cli.md` | T-P701, T-P512 |
 
 ## Dependency Order
 
