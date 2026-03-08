@@ -90,6 +90,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case PollResultMsg:
 		m.pollInFlight = false
+		m.status = ""
 		if msg.Err != nil {
 			m.err = msg.Err
 			return m, nil
