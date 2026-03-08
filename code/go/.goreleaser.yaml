@@ -30,13 +30,11 @@ builds:
 
 archives:
   - id: default
-    format: tar.gz
-    format_overrides: []
+    formats:
+      - tar.gz
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
     files:
-      - src: ../../LICENSE
-        strip_parent: true
       - src: README.md
         strip_parent: true
 
