@@ -263,7 +263,16 @@ func (o *Orchestrator) handleRetry(ctx context.Context, signal RetrySignal) {
 		Status:          "running",
 	}
 	o.state.Running[signal.IssueID] = run
-	go o.runWorker(ctx, *issue, signal.Attempt)
+
+	// Pre-allocate cancel and output monitor on orchestrator goroutine.
+	workerCtx, workerCancel := context.WithCancel(ctx)
+	o.workerCancels[signal.IssueID] = workerCancel
+
+	lastOutput := &atomic.Int64{}
+	lastOutput.Store(time.Now().UnixNano())
+	o.lastOutput[signal.IssueID] = lastOutput
+
+	go o.runWorker(workerCtx, *issue, signal.Attempt, lastOutput)
 }
 
 // scheduleRetry schedules a retry timer for an issue.
