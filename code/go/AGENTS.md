@@ -51,9 +51,9 @@ code/go/                                 ← Go implementation root
 │   └── BACKLOG_v1.md                    ← Condensed ticket list
 ├── kanban/                              ← File-based kanban board
 │   ├── plans/                           ← 8 master plans with research findings
-│   ├── todo/                            ← 47 pending tasks (each with Research Notes)
+│   ├── todo/                            ← Empty (all complete)
 │   ├── in-progress/
-│   ├── done/                            ← 10 completed (Phase 1)
+│   ├── done/                            ← 57 completed (all phases)
 │   ├── parked/
 │   └── handoffs/                        ← research-findings.md
 ├── README.md

@@ -1,6 +1,6 @@
 # Phase 4: TUI Mode
 
-**Status:** 🔲 PENDING
+**Status:** ✅ COMPLETE
 **Tickets:** T-P400 to T-P408 (9 tickets)
 **Prerequisites:** Phase 2 (tracker client), Phase 3 (workspace manager)
 **Goal:** `tempad` (default, no flags) shows a live task board, lets developer select → claim → workspace → IDE.
@@ -22,15 +22,15 @@
 
 | # | Ticket | Task | Status | File | Deps |
 | --- | -------- | ------ | -------- | ------ | ------ |
-| 1 | T-P400 | Claim mechanism (shared) | 🔲 Todo | `p4-00-claim-mechanism.md` | T-P200 |
-| 2 | T-P401 | Bubble Tea app model + messages | 🔲 Todo | `p4-01-app-model.md` | T-P105, T-P200, T-P300 |
-| 3 | T-P402 | Task board view — rendering | 🔲 Todo | `p4-02-board-view.md` | T-P401 |
-| 4 | T-P403 | Keyboard navigation and actions | 🔲 Todo | `p4-03-keyboard-nav.md` | T-P402 |
-| 5 | T-P404 | Task detail view | 🔲 Todo | `p4-04-detail-view.md` | T-P401 |
-| 6 | T-P405 | Poll loop and live refresh | 🔲 Todo | `p4-05-poll-loop.md` | T-P403 |
-| 7 | T-P406 | Task selection flow (claim→workspace→IDE) | 🔲 Todo | `p4-06-selection-flow.md` | T-P400, T-P302, T-P405 |
-| 8 | T-P407 | Release claimed task | 🔲 Todo | `p4-07-release-task.md` | T-P400, T-P405 |
-| 9 | T-P408 | TUI mode entry point | 🔲 Todo | `p4-08-tui-entrypoint.md` | T-P406, T-P407, T-P303 |
+| 1 | T-P400 | Claim mechanism (shared) | ✅ Done | `p4-00-claim-mechanism.md` | T-P200 |
+| 2 | T-P401 | Bubble Tea app model + messages | ✅ Done | `p4-01-app-model.md` | T-P105, T-P200, T-P300 |
+| 3 | T-P402 | Task board view — rendering | ✅ Done | `p4-02-board-view.md` | T-P401 |
+| 4 | T-P403 | Keyboard navigation and actions | ✅ Done | `p4-03-keyboard-nav.md` | T-P402 |
+| 5 | T-P404 | Task detail view | ✅ Done | `p4-04-detail-view.md` | T-P401 |
+| 6 | T-P405 | Poll loop and live refresh | ✅ Done | `p4-05-poll-loop.md` | T-P403 |
+| 7 | T-P406 | Task selection flow (claim→workspace→IDE) | ✅ Done | `p4-06-selection-flow.md` | T-P400, T-P302, T-P405 |
+| 8 | T-P407 | Release claimed task | ✅ Done | `p4-07-release-task.md` | T-P400, T-P405 |
+| 9 | T-P408 | TUI mode entry point | ✅ Done | `p4-08-tui-entrypoint.md` | T-P406, T-P407, T-P303 |
 
 ## Dependency Order
 

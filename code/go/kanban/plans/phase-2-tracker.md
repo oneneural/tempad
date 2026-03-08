@@ -1,6 +1,6 @@
 # Phase 2: Tracker Client (Linear)
 
-**Status:** 🔲 PENDING
+**Status:** ✅ COMPLETE
 **Tickets:** T-P200 to T-P205 (6 tickets)
 **Prerequisites:** Phase 1 (complete)
 **Goal:** All 6 tracker operations work against Linear's GraphQL API. Issues normalized into domain model.
@@ -20,12 +20,12 @@
 
 | # | Ticket | Task | Status | File | Deps |
 | --- | -------- | ------ | -------- | ------ | ------ |
-| 1 | T-P200 | Tracker client interface and error types | 🔲 Todo | `p2-00-tracker-interface.md` | T-P101 |
-| 2 | T-P201 | Linear GraphQL query/mutation builders | 🔲 Todo | `p2-01-graphql-queries.md` | T-P100 |
-| 3 | T-P202 | Linear HTTP transport and pagination | 🔲 Todo | `p2-02-http-transport.md` | T-P200, T-P201 |
-| 4 | T-P203 | Issue normalization (Linear → domain) | 🔲 Todo | `p2-03-issue-normalization.md` | T-P201, T-P101 |
-| 5 | T-P204 | Implement all 6 tracker operations | 🔲 Todo | `p2-04-tracker-operations.md` | T-P202, T-P203 |
-| 6 | T-P205 | Tracker integration smoke test | 🔲 Todo | `p2-05-tracker-smoke-test.md` | T-P204 |
+| 1 | T-P200 | Tracker client interface and error types | ✅ Done | `p2-00-tracker-interface.md` | T-P101 |
+| 2 | T-P201 | Linear GraphQL query/mutation builders | ✅ Done | `p2-01-graphql-queries.md` | T-P100 |
+| 3 | T-P202 | Linear HTTP transport and pagination | ✅ Done | `p2-02-http-transport.md` | T-P200, T-P201 |
+| 4 | T-P203 | Issue normalization (Linear → domain) | ✅ Done | `p2-03-issue-normalization.md` | T-P201, T-P101 |
+| 5 | T-P204 | Implement all 6 tracker operations | ✅ Done | `p2-04-tracker-operations.md` | T-P202, T-P203 |
+| 6 | T-P205 | Tracker integration smoke test | ✅ Done | `p2-05-tracker-smoke-test.md` | T-P204 |
 
 ## Dependency Order
 
