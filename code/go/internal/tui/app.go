@@ -195,11 +195,5 @@ func (m Model) tickCmd() tea.Cmd {
 	})
 }
 
-// updateBoard handles messages when the board view is active.
-// Placeholder — keyboard navigation added in T-P403.
-func (m Model) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
-	_ = msg
-	return m, nil
-}
-
+// updateBoard is defined in keys.go.
 // updateDetail and viewDetail are defined in detail.go.
