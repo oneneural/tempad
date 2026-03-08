@@ -17,6 +17,9 @@ Thumbs.db
 *.swo
 *~
 
+# TEMPAD workspace task files (generated per-issue, never commit)
+TEMPAD_TASK.md
+
 # Environment
 .env
 .env.local

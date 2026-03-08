@@ -138,6 +138,12 @@ Scopes: domain, config, tracker, linear, workspace, prompt, agent,
 feat/pX-YY-short-description
 ```
 
+## Task Context (TEMPAD_TASK.md)
+
+When TEMPAD dispatches work to a workspace (via TUI or daemon mode), it writes a `TEMPAD_TASK.md` file to the workspace root. This file contains the fully rendered workflow prompt with the assigned issue's context (identifier, title, description, status, labels, blockers, etc.).
+
+**Before starting any work in a TEMPAD workspace, check for `TEMPAD_TASK.md` and follow its instructions.** It is the primary source of truth for what you should be working on and how to execute the task.
+
 ## Rules
 
 1. The spec (`../../docs/SPEC_v1.md`) is the source of truth for behavior. Implementation must not conflict.

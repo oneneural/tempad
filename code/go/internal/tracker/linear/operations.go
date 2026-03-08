@@ -102,22 +102,21 @@ func (c *LinearClient) FetchIssuesByStates(ctx context.Context, states []string)
 }
 
 // FetchIssueStatesByIDs returns a map of issue ID → current state name.
+// Fetches each issue individually since Linear doesn't support batch node lookups.
 func (c *LinearClient) FetchIssueStatesByIDs(ctx context.Context, ids []string) (map[string]string, error) {
-	var data nodesData
-	err := c.do(ctx, issueStatesByIDsQuery, map[string]any{
-		"ids": ids,
-	}, &data)
-	if err != nil {
-		return nil, fmt.Errorf("fetch issue states: %w", err)
-	}
-
-	result := make(map[string]string, len(data.Nodes))
-	for _, node := range data.Nodes {
-		if node.ID != "" && node.State != nil {
-			result[node.ID] = node.State.Name
+	result := make(map[string]string, len(ids))
+	for _, id := range ids {
+		var data singleIssueData
+		err := c.do(ctx, singleIssueQuery, map[string]any{
+			"id": id,
+		}, &data)
+		if err != nil {
+			return nil, fmt.Errorf("fetch issue states: %w", err)
+		}
+		if data.Issue.ID != "" {
+			result[data.Issue.ID] = data.Issue.State.Name
 		}
 	}
-
 	return result, nil
 }
 

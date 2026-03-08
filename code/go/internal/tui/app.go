@@ -3,7 +3,9 @@ package tui
 
 import (
 	"context"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -11,6 +13,7 @@ import (
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/prompt"
 	"github.com/oneneural/tempad/internal/tracker"
 	"github.com/oneneural/tempad/internal/workspace"
 )
@@ -306,11 +309,24 @@ func (m Model) prepareWorkspaceCmd(issue domain.Issue) tea.Cmd {
 }
 
 // openIDECmd creates a tea.Cmd that launches the IDE for the workspace.
+// Before launching, it renders the workflow prompt and writes it as TEMPAD_TASK.md
+// in the workspace so the IDE's built-in agent has full task context.
 func (m Model) openIDECmd(issue domain.Issue, ws domain.Workspace) tea.Cmd {
 	ideCmd := m.cfg.IDECommand
 	ideArgs := m.cfg.IDEArgs
 	path := ws.Path
+	promptTemplate := m.cfg.PromptTemplate
 	return func() tea.Msg {
+		// Write rendered prompt as TEMPAD_TASK.md for IDE agent context.
+		if promptTemplate != "" {
+			builder := prompt.NewBuilder()
+			rendered, err := builder.Render(promptTemplate, issue, nil)
+			if err == nil && rendered != "" {
+				claudeMDPath := filepath.Join(path, "TEMPAD_TASK.md")
+				_ = os.WriteFile(claudeMDPath, []byte(rendered), 0644)
+			}
+		}
+
 		cmdStr := ideCmd
 		if ideArgs != "" {
 			cmdStr += " " + ideArgs

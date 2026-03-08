@@ -63,7 +63,9 @@ func (l *SubprocessLauncher) Launch(ctx context.Context, opts LaunchOpts) (*RunH
 		cmdStr += " " + opts.Args
 	}
 	if delivery != nil && len(delivery.ExtraArgs) > 0 {
-		cmdStr += " " + strings.Join(delivery.ExtraArgs, " ")
+		for _, arg := range delivery.ExtraArgs {
+			cmdStr += " " + shellQuote(arg)
+		}
 	}
 
 	cmd := exec.CommandContext(ctx, "bash", "-lc", cmdStr)
@@ -129,6 +131,13 @@ func (l *SubprocessLauncher) Launch(ctx context.Context, opts LaunchOpts) (*RunH
 	}
 
 	return handle, nil
+}
+
+// shellQuote wraps a string in single quotes for safe shell interpolation.
+func shellQuote(s string) string {
+	// Replace single quotes with '\'' (end quote, escaped quote, start quote)
+	escaped := strings.ReplaceAll(s, "'", `'"'"'`)
+	return "'" + escaped + "'"
 }
 
 // killProcessGroup sends SIGTERM, waits 5s, then SIGKILL to the process group.
