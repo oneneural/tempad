@@ -1,6 +1,9 @@
 package tui
 
-import "github.com/oneneural/tempad/internal/domain"
+import (
+	"github.com/oneneural/tempad/internal/config"
+	"github.com/oneneural/tempad/internal/domain"
+)
 
 // PollResultMsg carries the result of a tracker poll.
 type PollResultMsg struct {
@@ -37,6 +40,12 @@ type ReleaseResultMsg struct {
 // errMsg wraps errors from async commands for consistent handling.
 type errMsg struct {
 	err error
+}
+
+// ConfigReloadMsg carries a reloaded config from the file watcher.
+type ConfigReloadMsg struct {
+	Cfg *config.ServiceConfig
+	Err error
 }
 
 // tickMsg triggers a poll cycle.

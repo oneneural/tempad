@@ -340,11 +340,36 @@ func (o *Orchestrator) scheduleRetry(ctx context.Context, issueID, identifier st
 }
 
 // applyNewConfig applies a reloaded config to the orchestrator.
+// In-flight agents are not restarted — changes apply to the next dispatch cycle.
 func (o *Orchestrator) applyNewConfig(cfg *config.ServiceConfig, ticker *time.Ticker) {
-	o.logger.Info("applying new config",
-		"poll_interval_ms", cfg.PollIntervalMs,
-		"max_concurrent", cfg.MaxConcurrent,
-	)
+	old := o.cfg
+
+	// Log changed fields for operational debugging.
+	if old.PollIntervalMs != cfg.PollIntervalMs {
+		o.logger.Info("config changed: poll_interval_ms",
+			"old", old.PollIntervalMs, "new", cfg.PollIntervalMs)
+	}
+	if old.MaxConcurrent != cfg.MaxConcurrent {
+		o.logger.Info("config changed: max_concurrent",
+			"old", old.MaxConcurrent, "new", cfg.MaxConcurrent)
+	}
+	if old.MaxRetries != cfg.MaxRetries {
+		o.logger.Info("config changed: max_retries",
+			"old", old.MaxRetries, "new", cfg.MaxRetries)
+	}
+	if old.MaxRetryBackoffMs != cfg.MaxRetryBackoffMs {
+		o.logger.Info("config changed: max_retry_backoff_ms",
+			"old", old.MaxRetryBackoffMs, "new", cfg.MaxRetryBackoffMs)
+	}
+	if old.StallTimeoutMs != cfg.StallTimeoutMs {
+		o.logger.Info("config changed: stall_timeout_ms",
+			"old", old.StallTimeoutMs, "new", cfg.StallTimeoutMs)
+	}
+	if old.AgentCommand != cfg.AgentCommand {
+		o.logger.Info("config changed: agent_command",
+			"old", old.AgentCommand, "new", cfg.AgentCommand)
+	}
+
 	o.cfg = cfg
 
 	// Update state limits.
