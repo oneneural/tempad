@@ -1,8 +1,11 @@
 package orchestrator
 
 import (
+	"context"
 	"sort"
+	"time"
 
+	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/domain"
 )
 
@@ -84,6 +87,47 @@ func priorityVal(p *int) int {
 // stateSlotAvailable checks if there's a per-state concurrency slot available
 // for the given issue state. If no per-state limit is configured, returns true
 // (fall back to global limit). Invalid entries (non-positive) are ignored.
+// dispatch iterates eligible candidates and claims + spawns workers.
+func (o *Orchestrator) dispatch(ctx context.Context, candidates []domain.Issue) {
+	for _, issue := range candidates {
+		if o.state.AvailableSlots() <= 0 {
+			break
+		}
+		if !o.stateSlotAvailable(issue.State) {
+			continue
+		}
+
+		// Claim the issue.
+		if err := claim.Claim(ctx, o.tracker, issue.ID, o.cfg.TrackerIdentity); err != nil {
+			o.logger.Warn("claim failed, skipping",
+				"issue", issue.Identifier,
+				"error", err,
+			)
+			continue
+		}
+
+		o.state.Claimed[issue.ID] = true
+
+		// Spawn worker goroutine.
+		attempt := 0
+		run := &domain.RunAttempt{
+			IssueID:         issue.ID,
+			IssueIdentifier: issue.Identifier,
+			Attempt:         &attempt,
+			StartedAt:       time.Now(),
+			Status:          "running",
+		}
+		o.state.Running[issue.ID] = run
+
+		go o.runWorker(ctx, issue, attempt)
+
+		o.logger.Info("dispatched",
+			"issue", issue.Identifier,
+			"slots_remaining", o.state.AvailableSlots(),
+		)
+	}
+}
+
 func (o *Orchestrator) stateSlotAvailable(state string) bool {
 	if len(o.cfg.MaxConcurrentByState) == 0 {
 		return true
