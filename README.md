@@ -3,6 +3,7 @@
 [![CI](https://github.com/oneneural/tempad/actions/workflows/ci.yml/badge.svg)](https://github.com/oneneural/tempad/actions/workflows/ci.yml)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/oneneural/tempad?filter=go/*&label=Go%20Release)](https://github.com/oneneural/tempad/releases)
 
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
@@ -23,18 +24,37 @@ An enhanced open-source alternative to [OpenAI's Symphony](https://github.com/op
 
 ### Prerequisites
 
-- **Go 1.22+** — [install](https://go.dev/dl/)
 - **Linear API key** — create at [Linear Settings → API](https://linear.app/settings/api)
 
 ### Install
 
+**Homebrew (macOS/Linux):**
+
+```bash
+brew install oneneural/tap/tempad
+```
+
+**Script (macOS/Linux):**
+
+```bash
+curl -sSL https://raw.githubusercontent.com/oneneural/tempad/main/scripts/install.sh | bash
+```
+
+**Go install:**
+
+```bash
+go install github.com/oneneural/tempad/cmd/tempad@latest
+```
+
+**From source:**
+
 ```bash
 git clone https://github.com/oneneural/tempad.git
 cd tempad/code/go
-
 go build -o tempad ./cmd/tempad
-./tempad --help
 ```
+
+Or download a binary from the [latest release](https://github.com/oneneural/tempad/releases).
 
 ### Configure
 
@@ -86,8 +106,10 @@ tempad/
 │       ├── kanban/                      ← File-based kanban board
 │       ├── README.md                    ← Go dev guide
 │       └── go.mod
+├── scripts/
+│   └── install.sh                       ← One-line installer for releases
 ├── .github/
-│   ├── workflows/                       ← CI, labeler, label sync
+│   ├── workflows/                       ← CI, release, labeler, label sync
 │   ├── labels.yml                       ← Label definitions (name, color, description)
 │   └── labeler.yml                      ← PR auto-labeling rules
 └── README.md                            ← This file
@@ -108,12 +130,23 @@ tempad/
 | --- | --- | --- | --- | --- |
 | **Go** | [`code/go/`](code/go/) | Complete | 57/57 tickets | [`ARCHITECTURE_GO_v1.md`](code/go/docs/ARCHITECTURE_GO_v1.md) |
 
+### Releases
+
+Each implementation has its own release cycle using prefixed tags:
+
+| Implementation | Tag Format | Example | Workflow |
+| --- | --- | --- | --- |
+| Go | `go/v*` | `go/v1.0.0` | [`release-go.yml`](.github/workflows/release-go.yml) |
+
+Releases are built with [GoReleaser](https://goreleaser.com) and produce cross-platform binaries (linux/darwin/windows, amd64/arm64) with SHA256 checksums.
+
 ### Adding a New Implementation
 
 1. Create `code/<language>/` with its own `README.md`, `AGENTS.md`, and `CLAUDE.md`
 2. Add implementation-specific docs under `code/<language>/docs/` (architecture, backlog)
 3. Set up a `kanban/` board for task tracking
 4. Reference the shared spec (`docs/SPEC_v1.md`) as the source of truth for behavior
+5. Add a release workflow (`.github/workflows/release-<lang>.yml`) with a `<lang>/v*` tag trigger
 
 ## For Coding Agents
 
