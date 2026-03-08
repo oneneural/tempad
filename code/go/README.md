@@ -175,6 +175,7 @@ tempad [--workflow WORKFLOW.md] [--identity user@example.com] [--ide code]
 | `q` | Quit |
 
 **What happens when you press Enter:**
+
 1. TEMPAD assigns the issue to you on Linear
 2. Creates an isolated workspace directory
 3. Runs `after_create` and `before_run` hooks
@@ -189,6 +190,7 @@ tempad --daemon [--workflow WORKFLOW.md] [--agent "claude-code"] [--port 8080]
 ```
 
 **Lifecycle:**
+
 1. Polls Linear for issues in `active_states`
 2. Filters out blocked issues and already-claimed issues
 3. Claims up to `max_concurrent` issues
@@ -224,7 +226,7 @@ tempad --daemon [--workflow WORKFLOW.md] [--agent "claude-code"] [--port 8080]
 
 ### Source Precedence
 
-```
+```text
 CLI flags  >  User config  >  Workflow front matter  >  Env vars  >  Defaults
               (~/.tempad/     (WORKFLOW.md)             ($VAR)
                config.yaml)
@@ -366,18 +368,21 @@ display:
 ## Features
 
 ### Core
+
 - **Linear integration** — polls project issues via GraphQL, handles pagination and blocker detection
 - **Issue claiming** — assign → fetch → verify pattern prevents race conditions across team members
 - **Workspace isolation** — per-issue directories with lifecycle hooks (prepare/clean)
 - **Liquid templates** — agent prompts rendered with full issue context
 
 ### TUI Mode
+
 - **Interactive board** — Bubble Tea-based terminal UI with issue list and detail views
 - **IDE integration** — claim an issue and open it directly in your editor
 - **Live refresh** — poll for updates without leaving the terminal
 - **Hot reload** — WORKFLOW.md changes applied instantly without restart
 
 ### Daemon Mode
+
 - **Concurrent agents** — dispatch multiple coding agents with configurable concurrency
 - **Retry strategies** — exponential backoff for failures, continuation retries for clean exits
 - **Stall detection** — monitor agent stdout/stderr, cancel unresponsive workers
@@ -385,11 +390,13 @@ display:
 - **Graceful shutdown** — release all claims on SIGINT/SIGTERM
 
 ### HTTP Dashboard
+
 - **REST API** — query orchestrator state, issue details, trigger manual refreshes
 - **HTML dashboard** — live view of running agents and retry queue
 - **Loopback only** — binds to 127.0.0.1 for security
 
 ### Observability
+
 - **Structured logging** — slog with contextual fields per issue
 - **Log rotation** — lumberjack-based rotation (50MB, 5 backups)
 - **Per-issue logs** — separate log files for each agent run

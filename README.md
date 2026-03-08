@@ -1,4 +1,4 @@
-# T.E.M.P.A.D.
+# TEMPAD
 
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
