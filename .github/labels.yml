@@ -1,0 +1,123 @@
+# Label definitions synced by crazy-max/ghaction-github-labeler
+# Colors are hex without '#' prefix
+
+# --- Type labels ---
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+
+# --- Scope labels (auto-applied by labeler) ---
+- name: "go"
+  color: "00add8"
+  description: "Go implementation changes"
+
+- name: "ci"
+  color: "e8d44d"
+  description: "CI/CD pipeline changes"
+
+- name: "cli"
+  color: "5319e7"
+  description: "CLI entry points and commands"
+
+- name: "config"
+  color: "f9d0c4"
+  description: "Configuration system changes"
+
+- name: "tracker"
+  color: "1d76db"
+  description: "Tracker client and Linear integration"
+
+- name: "workspace"
+  color: "b60205"
+  description: "Workspace manager, paths, hooks"
+
+- name: "tui"
+  color: "0e8a16"
+  description: "Terminal UI (Bubble Tea)"
+
+- name: "orchestrator"
+  color: "ff7619"
+  description: "Daemon orchestrator, dispatch, retry"
+
+- name: "server"
+  color: "006b75"
+  description: "HTTP server and REST API"
+
+- name: "tests"
+  color: "bfd4f2"
+  description: "Test changes and additions"
+
+# --- Branch-based labels ---
+- name: "feature"
+  color: "0e8a16"
+  description: "New feature branch"
+
+- name: "bugfix"
+  color: "d73a4a"
+  description: "Bug fix branch"
+
+- name: "refactor"
+  color: "fbca04"
+  description: "Code refactoring branch"
+
+# --- Priority labels ---
+- name: "priority: critical"
+  color: "b60205"
+  description: "Must be fixed immediately"
+
+- name: "priority: high"
+  color: "d93f0b"
+  description: "Should be fixed soon"
+
+- name: "priority: medium"
+  color: "fbca04"
+  description: "Normal priority"
+
+- name: "priority: low"
+  color: "0e8a16"
+  description: "Nice to have"
+
+# --- Status labels ---
+- name: "status: blocked"
+  color: "b60205"
+  description: "Blocked by another issue or external dependency"
+
+- name: "status: in review"
+  color: "0e8a16"
+  description: "In code review"
+
+- name: "status: needs info"
+  color: "d876e3"
+  description: "Waiting for more information"
