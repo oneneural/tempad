@@ -35,10 +35,16 @@ func (m Model) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case "enter":
-		// Selection flow — claim → workspace → IDE (T-P406).
-		// For now, store selected ID for later wiring.
+		// Selection flow: claim → workspace → IDE.
+		if m.claiming {
+			return m, nil // Already in progress.
+		}
 		if issue := m.selectedIssue(); issue != nil {
+			m.claiming = true
 			m.selectedID = issue.ID
+			m.status = "Claiming..."
+			m.err = nil
+			return m, m.claimCmd(*issue)
 		}
 		return m, nil
 
