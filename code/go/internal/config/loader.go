@@ -183,6 +183,9 @@ func applyCLIFlags(cfg *ServiceConfig, cli *CLIFlags) {
 	if cli.WorkflowPath != "" {
 		cfg.WorkflowPath = cli.WorkflowPath
 	}
+	if cli.DryRun {
+		cfg.DryRun = true
+	}
 }
 
 // Load performs the full config loading pipeline:

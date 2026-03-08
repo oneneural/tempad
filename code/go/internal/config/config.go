@@ -57,6 +57,9 @@ type ServiceConfig struct {
 	// Server (optional extension)
 	ServerPort int `json:"server_port"`
 
+	// DryRun skips agent launch in daemon mode; logs the command instead.
+	DryRun bool `json:"dry_run"`
+
 	// Internal: path to the workflow file (for hot reload).
 	WorkflowPath string `json:"-"`
 
@@ -67,6 +70,7 @@ type ServiceConfig struct {
 // CLIFlags holds command-line overrides. These have highest precedence.
 type CLIFlags struct {
 	Daemon       bool
+	DryRun       bool
 	WorkflowPath string
 	Identity     string
 	Agent        string
