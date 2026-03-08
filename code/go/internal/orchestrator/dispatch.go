@@ -80,3 +80,31 @@ func priorityVal(p *int) int {
 	}
 	return *p
 }
+
+// stateSlotAvailable checks if there's a per-state concurrency slot available
+// for the given issue state. If no per-state limit is configured, returns true
+// (fall back to global limit). Invalid entries (non-positive) are ignored.
+func (o *Orchestrator) stateSlotAvailable(state string) bool {
+	if len(o.cfg.MaxConcurrentByState) == 0 {
+		return true
+	}
+
+	normalized := domain.NormalizeState(state)
+	limit, exists := o.cfg.MaxConcurrentByState[normalized]
+	if !exists {
+		return true // No per-state limit.
+	}
+	if limit <= 0 {
+		return true // Invalid entry, ignore.
+	}
+
+	// Count running issues in this state.
+	count := 0
+	for _, run := range o.state.Running {
+		if domain.NormalizeState(run.Status) == normalized {
+			count++
+		}
+	}
+
+	return count < limit
+}

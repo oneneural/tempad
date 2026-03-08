@@ -102,3 +102,52 @@ func TestHasRequiredFields(t *testing.T) {
 	assert.False(t, hasRequiredFields(domain.Issue{ID: "1", Identifier: "P-1", Title: "", State: "s"}))
 	assert.False(t, hasRequiredFields(domain.Issue{ID: "1", Identifier: "P-1", Title: "t", State: ""}))
 }
+
+func TestStateSlotAvailable(t *testing.T) {
+	cfg := &config.ServiceConfig{
+		MaxConcurrent: 5,
+		MaxConcurrentByState: map[string]int{
+			"todo":        2,
+			"in progress": 1,
+		},
+	}
+	o := New(cfg, nil, nil, testLogger())
+
+	// No running issues — should be available.
+	assert.True(t, o.stateSlotAvailable("Todo"))
+	assert.True(t, o.stateSlotAvailable("In Progress"))
+
+	// Add a running issue in "todo" state.
+	o.state.Running["1"] = &domain.RunAttempt{IssueID: "1", Status: "todo"}
+
+	// Still under limit.
+	assert.True(t, o.stateSlotAvailable("Todo"))
+
+	// Add another.
+	o.state.Running["2"] = &domain.RunAttempt{IssueID: "2", Status: "todo"}
+
+	// At limit.
+	assert.False(t, o.stateSlotAvailable("Todo"))
+
+	// State without per-state limit — always available (falls back to global).
+	assert.True(t, o.stateSlotAvailable("Review"))
+}
+
+func TestStateSlotAvailable_NoConfig(t *testing.T) {
+	cfg := &config.ServiceConfig{MaxConcurrent: 5}
+	o := New(cfg, nil, nil, testLogger())
+
+	// No per-state config — always available.
+	assert.True(t, o.stateSlotAvailable("Todo"))
+}
+
+func TestStateSlotAvailable_InvalidLimit(t *testing.T) {
+	cfg := &config.ServiceConfig{
+		MaxConcurrent:        5,
+		MaxConcurrentByState: map[string]int{"todo": -1},
+	}
+	o := New(cfg, nil, nil, testLogger())
+
+	// Invalid limit ignored — falls back to global.
+	assert.True(t, o.stateSlotAvailable("Todo"))
+}
