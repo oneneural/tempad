@@ -3,11 +3,17 @@ package orchestrator
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
+	"math"
+	"sync/atomic"
 	"time"
 
+	"github.com/oneneural/tempad/internal/agent"
+	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/prompt"
 	"github.com/oneneural/tempad/internal/tracker"
 	"github.com/oneneural/tempad/internal/workspace"
 )
@@ -33,11 +39,13 @@ type RetrySignal struct {
 // state. No other goroutine reads or writes the state — communication is via
 // channels. See Architecture doc Section 5.3.
 type Orchestrator struct {
-	cfg     *config.ServiceConfig
-	tracker tracker.Client
-	ws      *workspace.Manager
-	state   *domain.OrchestratorState
-	logger  *slog.Logger
+	cfg      *config.ServiceConfig
+	tracker  tracker.Client
+	ws       *workspace.Manager
+	launcher agent.Launcher
+	builder  *prompt.Builder
+	state    *domain.OrchestratorState
+	logger   *slog.Logger
 
 	// Channels — all buffered to prevent goroutine leaks.
 	workerResults chan WorkerResult
@@ -46,6 +54,12 @@ type Orchestrator struct {
 
 	// Retry timer handles for cancellation.
 	activeTimers map[string]*time.Timer // issue_id → timer
+
+	// Stall detection: issue_id → last output timestamp (Unix nanos).
+	lastOutput map[string]*atomic.Int64
+
+	// Worker cancel functions for killing agents.
+	workerCancels map[string]func() // issue_id → cancel
 }
 
 // New creates a new Orchestrator with initialized state and channels.
@@ -56,17 +70,21 @@ func New(cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager
 	}
 
 	return &Orchestrator{
-		cfg:     cfg,
-		tracker: client,
-		ws:      ws,
-		state:   domain.NewOrchestratorState(cfg.PollIntervalMs, maxConcurrent),
-		logger:  logger,
+		cfg:      cfg,
+		tracker:  client,
+		ws:       ws,
+		launcher: agent.NewSubprocessLauncher(),
+		builder:  prompt.NewBuilder(),
+		state:    domain.NewOrchestratorState(cfg.PollIntervalMs, maxConcurrent),
+		logger:   logger,
 
 		workerResults: make(chan WorkerResult, maxConcurrent),
 		retryTimers:   make(chan RetrySignal, maxConcurrent),
 		configReload:  make(chan *config.ServiceConfig, 1),
 
-		activeTimers: make(map[string]*time.Timer),
+		activeTimers:  make(map[string]*time.Timer),
+		lastOutput:    make(map[string]*atomic.Int64),
+		workerCancels: make(map[string]func()),
 	}
 }
 
@@ -127,38 +145,189 @@ func (o *Orchestrator) Run(ctx context.Context) error {
 }
 
 // tick runs one poll-reconcile-dispatch cycle.
-// Placeholder — reconciliation (T-P511) and dispatch (T-P504) added later.
 func (o *Orchestrator) tick(ctx context.Context) {
 	o.logger.Debug("tick",
 		"running", o.state.RunningCount(),
 		"slots", o.state.AvailableSlots(),
 	)
-	// TODO(T-P511): reconcile running issues.
-	// TODO(T-P504): dispatch eligible candidates.
+
+	// Reconcile running issues.
+	o.reconcile(ctx)
+
+	// Validate dispatch config.
+	if err := config.ValidateForStartup(o.cfg, "daemon"); err != nil {
+		o.logger.Warn("dispatch config invalid, skipping", "error", err)
+		return
+	}
+
+	// Fetch candidates.
+	if o.state.AvailableSlots() <= 0 {
+		return
+	}
+	issues, err := o.tracker.FetchCandidateIssues(ctx)
+	if err != nil {
+		o.logger.Error("fetch candidates failed", "error", err)
+		return
+	}
+
+	candidates := o.selectCandidates(issues)
+	o.dispatch(ctx, candidates)
 }
 
 // handleWorkerExit processes a worker result when an agent finishes.
-// Placeholder — worker exit handling (T-P509) added later.
 func (o *Orchestrator) handleWorkerExit(ctx context.Context, result WorkerResult) {
 	o.logger.Info("worker exit",
 		"issue", result.Identifier,
 		"exit_code", result.ExitCode,
 		"duration", result.Duration,
+		"attempt", result.Attempt,
 	)
-	// TODO(T-P509): handle exit, schedule retry.
+
+	// Remove from running.
+	delete(o.state.Running, result.IssueID)
+	delete(o.lastOutput, result.IssueID)
+	delete(o.workerCancels, result.IssueID)
+
+	// Update totals.
+	o.state.AgentTotals.TotalRuntimeSeconds += result.Duration.Seconds()
+
+	if result.ExitCode == 0 {
+		// Normal exit — mark completed, schedule continuation retry (1s).
+		o.state.Completed[result.IssueID] = true
+		o.scheduleRetry(ctx, result.IssueID, result.Identifier, result.Attempt, true, "")
+	} else {
+		// Failure — schedule exponential backoff retry.
+		errMsg := fmt.Sprintf("exit code %d", result.ExitCode)
+		if result.Err != nil {
+			errMsg = result.Err.Error()
+		}
+		o.scheduleRetry(ctx, result.IssueID, result.Identifier, result.Attempt+1, false, errMsg)
+	}
 }
 
 // handleRetry processes a retry signal when a timer fires.
-// Placeholder — retry handling (T-P510) added later.
 func (o *Orchestrator) handleRetry(ctx context.Context, signal RetrySignal) {
 	if ctx.Err() != nil {
-		return // Don't retry during shutdown.
+		return
 	}
-	o.logger.Info("retry signal",
+
+	// Remove from retry queue.
+	delete(o.state.RetryAttempts, signal.IssueID)
+	delete(o.activeTimers, signal.IssueID)
+
+	o.logger.Info("retry firing",
 		"issue", signal.Identifier,
 		"attempt", signal.Attempt,
 	)
-	// TODO(T-P510): check issue state, dispatch if eligible.
+
+	// Check if issue is still active.
+	issue, err := o.tracker.FetchIssue(ctx, signal.IssueID)
+	if err != nil || issue == nil {
+		o.logger.Warn("retry: issue not found, releasing claim",
+			"issue", signal.Identifier,
+		)
+		_ = o.tracker.UnassignIssue(ctx, signal.IssueID)
+		delete(o.state.Claimed, signal.IssueID)
+		return
+	}
+
+	// Check max retries (failure retries only).
+	entry, hasEntry := o.state.RetryAttempts[signal.IssueID]
+	if hasEntry && !entry.IsContinuation && signal.Attempt > o.cfg.MaxRetries {
+		o.logger.Info("max retries exhausted, releasing claim",
+			"issue", signal.Identifier,
+			"attempt", signal.Attempt,
+		)
+		_ = claim.Release(ctx, o.tracker, signal.IssueID)
+		delete(o.state.Claimed, signal.IssueID)
+		return
+	}
+
+	// Check slots.
+	if o.state.AvailableSlots() <= 0 {
+		o.logger.Debug("retry: no slots, requeueing",
+			"issue", signal.Identifier,
+		)
+		// Requeue with same attempt.
+		isContinuation := hasEntry && entry.IsContinuation
+		o.scheduleRetry(ctx, signal.IssueID, signal.Identifier, signal.Attempt, isContinuation, "no slots")
+		return
+	}
+
+	// Dispatch.
+	run := &domain.RunAttempt{
+		IssueID:         signal.IssueID,
+		IssueIdentifier: signal.Identifier,
+		Attempt:         &signal.Attempt,
+		StartedAt:       time.Now(),
+		Status:          "running",
+	}
+	o.state.Running[signal.IssueID] = run
+	go o.runWorker(ctx, *issue, signal.Attempt)
+}
+
+// scheduleRetry schedules a retry timer for an issue.
+func (o *Orchestrator) scheduleRetry(ctx context.Context, issueID, identifier string, attempt int, isContinuation bool, errMsg string) {
+	// Cancel any existing timer.
+	if timer, ok := o.activeTimers[issueID]; ok {
+		timer.Stop()
+		delete(o.activeTimers, issueID)
+	}
+
+	// Check max retries for failure retries.
+	if !isContinuation && attempt > o.cfg.MaxRetries {
+		o.logger.Info("max retries exhausted, releasing claim",
+			"issue", identifier,
+			"attempt", attempt,
+		)
+		_ = claim.Release(ctx, o.tracker, issueID)
+		delete(o.state.Claimed, issueID)
+		return
+	}
+
+	// Compute delay.
+	var delay time.Duration
+	if isContinuation {
+		delay = 1 * time.Second
+	} else {
+		// Exponential backoff: min(10000 * 2^(attempt-1), max_retry_backoff_ms).
+		backoffMs := 10000.0 * math.Pow(2, float64(attempt-1))
+		maxMs := float64(o.cfg.MaxRetryBackoffMs)
+		if maxMs <= 0 {
+			maxMs = 300000
+		}
+		delay = time.Duration(math.Min(backoffMs, maxMs)) * time.Millisecond
+	}
+
+	// Store retry entry.
+	o.state.RetryAttempts[issueID] = &domain.RetryEntry{
+		IssueID:        issueID,
+		Identifier:     identifier,
+		Attempt:        attempt,
+		DueAtMs:        time.Now().Add(delay).UnixMilli(),
+		Error:          errMsg,
+		IsContinuation: isContinuation,
+	}
+
+	// Schedule timer.
+	timer := time.AfterFunc(delay, func() {
+		if ctx.Err() != nil {
+			return
+		}
+		o.retryTimers <- RetrySignal{
+			IssueID:    issueID,
+			Identifier: identifier,
+			Attempt:    attempt,
+		}
+	})
+	o.activeTimers[issueID] = timer
+
+	o.logger.Info("retry scheduled",
+		"issue", identifier,
+		"attempt", attempt,
+		"delay", delay,
+		"continuation", isContinuation,
+	)
 }
 
 // applyNewConfig applies a reloaded config to the orchestrator.
