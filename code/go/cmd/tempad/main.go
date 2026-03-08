@@ -48,6 +48,9 @@ In daemon mode (--daemon), it auto-dispatches coding agents headlessly.`,
 		if cliFlags.Daemon {
 			return runDaemon()
 		}
+		if cliFlags.DryRun {
+			fmt.Fprintf(os.Stderr, "Warning: --dry-run only applies to daemon mode (--daemon)\n")
+		}
 		if cliFlags.Port > 0 {
 			fmt.Fprintf(os.Stderr, "Warning: --port is only used in daemon mode (--daemon)\n")
 		}
@@ -175,6 +178,7 @@ func runDaemon() error {
 		"max_concurrent", cfg.MaxConcurrent,
 		"agent_command", cfg.AgentCommand,
 		"project", cfg.TrackerProjectSlug,
+		"dry_run", cfg.DryRun,
 	)
 
 	return orch.Run(ctx)
@@ -196,6 +200,8 @@ func init() {
 		"HTTP server port (0 = disabled)")
 	rootCmd.PersistentFlags().StringVar(&cliFlags.LogLevel, "log-level", "",
 		"Log level (debug, info, warn, error)")
+	rootCmd.PersistentFlags().BoolVar(&cliFlags.DryRun, "dry-run", false,
+		"Run full pipeline but skip agent launch (daemon mode only)")
 
 	// Subcommands.
 	rootCmd.AddCommand(initCmd)

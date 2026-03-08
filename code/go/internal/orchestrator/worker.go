@@ -73,18 +73,34 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 		"TEMPAD_ATTEMPT":          fmt.Sprintf("%d", attempt),
 	}
 
-	// 4. Launch agent with a short reference prompt pointing to TEMPAD_TASK.md.
-	// The full rendered prompt is already written to TEMPAD_TASK.md in the workspace.
+	// 4. Build launch options.
 	refPrompt := fmt.Sprintf("Read and follow TEMPAD_TASK.md in the current directory. You are working on %s: %s", issue.Identifier, issue.Title)
-	log.Info("launching agent")
-	handle, err := o.launcher.Launch(ctx, agent.LaunchOpts{
+	launchOpts := agent.LaunchOpts{
 		Command:       o.cfg.AgentCommand,
 		Args:          o.cfg.AgentArgs,
 		WorkspacePath: ws.Path,
 		Prompt:        refPrompt,
 		PromptMethod:  o.cfg.PromptDelivery,
 		Env:           env,
-	})
+	}
+
+	// 4b. Dry-run: log what would run and return success without launching.
+	if o.cfg.DryRun {
+		log.Info("dry-run: skipping agent launch",
+			"command", launchOpts.Command,
+			"args", launchOpts.Args,
+			"workspace", launchOpts.WorkspacePath,
+			"prompt_method", launchOpts.PromptMethod,
+			"prompt", launchOpts.Prompt,
+			"env", fmt.Sprintf("%v", launchOpts.Env),
+		)
+		result.ExitCode = 0
+		return
+	}
+
+	// Launch agent with a short reference prompt pointing to TEMPAD_TASK.md.
+	log.Info("launching agent")
+	handle, err := o.launcher.Launch(ctx, launchOpts)
 	if err != nil {
 		result.Err = fmt.Errorf("agent launch: %w", err)
 		result.ExitCode = 1
