@@ -558,7 +558,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ### Phase 2 Internal Dependency Chain
 
-```
+```text
 {T-P200, T-P201} → T-P202 → T-P203 → T-P204 → T-P205
 ```
 
@@ -653,7 +653,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ### Phase 3 Internal Dependency Chain
 
-```
+```text
 {T-P300, T-P301} → T-P302 → T-P303 → T-P304
 ```
 
@@ -767,7 +767,7 @@ All 10 tickets have been implemented with source code and unit tests.
 
 ### Phase 4 Internal Dependency Chain
 
-```
+```text
 T-P400 → T-P401 → {T-P402, T-P404} → T-P403 → T-P405 → T-P406 → T-P407 → T-P408
 ```
 
@@ -951,7 +951,7 @@ T-P400 → T-P401 → {T-P402, T-P404} → T-P403 → T-P405 → T-P406 → T-P4
 
 ### Phase 5 Internal Dependency Chain
 
-```
+```text
 T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 → T-P505 → {T-P509, T-P510, T-P511} → T-P512 → T-P513
 ```
 
@@ -1155,7 +1155,7 @@ These are implementation details to resolve during coding, not architectural blo
 
 ## 16. Parallelization Opportunities
 
-```
+```text
 Phase 1: T-P100 → {T-P101, T-P102, T-P103, T-P104} → T-P105 → T-P106 → T-P107 → T-P108 → T-P109
 Phase 2: {T-P200, T-P201} → T-P202 → T-P203 → T-P204 → T-P205
 Phase 3: {T-P300, T-P301} → T-P302 → T-P303 → T-P304

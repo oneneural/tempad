@@ -171,7 +171,7 @@ Four parallel research tracks were conducted to validate the technical approach 
 ## Cross-Cutting Concerns
 
 | Area | Finding | Impact |
-|------|---------|--------|
+| ------ | --------- | -------- |
 | Linear `slug` vs `slugId` | Use `slug` — `slugId` is deprecated | Phase 2, 4, 5 |
 | Path safety | `filepath.Rel()` over `HasPrefix` | Phase 3 |
 | fsnotify | Watch directory, not file | Phase 6 |

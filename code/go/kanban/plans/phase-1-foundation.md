@@ -18,7 +18,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File |
-|---|--------|------|--------|------|
+| --- | -------- | ------ | -------- | ------ |
 | 1 | T-P100 | Go module and project scaffold | ✅ Done | `p1-00-go-module-scaffold.md` |
 | 2 | T-P101 | Domain model structs | ✅ Done | `p1-01-domain-model-structs.md` |
 | 3 | T-P102 | Workflow loader (WORKFLOW.md) | ✅ Done | `p1-02-workflow-loader.md` |
@@ -32,7 +32,7 @@
 
 ## Dependency Order
 
-```
+```text
 T-P100 → {T-P101, T-P102, T-P103, T-P104} → T-P105 → T-P106 → T-P107 → T-P108 → T-P109
 ```
 

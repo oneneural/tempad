@@ -19,7 +19,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P800 | Unit test coverage for all packages | 🔲 Todo | `p8-00-unit-tests.md` | All phases |
 | 2 | T-P801 | Race condition detection | 🔲 Todo | `p8-01-race-detection.md` | T-P800 |
 | 3 | T-P802 | Goroutine leak detection | 🔲 Todo | `p8-02-goroutine-leaks.md` | T-P800 |
@@ -29,7 +29,7 @@
 
 ## Dependency Order
 
-```
+```text
 {T-P800} → {T-P801, T-P802} → {T-P803, T-P804, T-P805}
 ```
 

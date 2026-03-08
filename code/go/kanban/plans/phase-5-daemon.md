@@ -22,7 +22,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P500 | Orchestrator runtime state | 🔲 Todo | `p5-00-orchestrator-state.md` | T-P101, T-P200, T-P300, T-P400 |
 | 2 | T-P501 | Orchestrator main select loop | 🔲 Todo | `p5-01-select-loop.md` | T-P500 |
 | 3 | T-P502 | Candidate selection and sorting | 🔲 Todo | `p5-02-candidate-selection.md` | T-P101 |
@@ -40,7 +40,7 @@
 
 ## Dependency Order
 
-```
+```text
 T-P500 → T-P501 → {T-P502, T-P506, T-P507} → {T-P503, T-P508} → T-P504 → T-P505 → {T-P509, T-P510, T-P511} → T-P512 → T-P513
 ```
 

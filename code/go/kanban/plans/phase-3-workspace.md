@@ -19,7 +19,7 @@
 ## Task List
 
 | # | Ticket | Task | Status | File | Deps |
-|---|--------|------|--------|------|------|
+| --- | -------- | ------ | -------- | ------ | ------ |
 | 1 | T-P300 | Workspace path resolution and safety | 🔲 Todo | `p3-00-workspace-paths.md` | T-P101 |
 | 2 | T-P301 | Hook execution engine | 🔲 Todo | `p3-01-hook-execution.md` | T-P100 |
 | 3 | T-P302 | Workspace Prepare lifecycle | 🔲 Todo | `p3-02-workspace-prepare.md` | T-P300, T-P301 |
@@ -28,7 +28,7 @@
 
 ## Dependency Order
 
-```
+```text
 {T-P300, T-P301} → T-P302 → T-P303 → T-P304
 ```
 

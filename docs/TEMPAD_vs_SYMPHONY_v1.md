@@ -21,7 +21,7 @@ limits and richer observability.
 ## Feature Matrix
 
 | Capability | Symphony v1 | T.E.M.P.A.D. |
-|---|---|---|
+| --- | --- | --- |
 | **Operating Modes** | Daemon only (headless) | Daemon + TUI (interactive task board) |
 | **Agent Support** | Codex app-server only (hardcoded JSON-RPC protocol) | Any agent — shell command + exit code contract |
 | **Prompt Delivery** | Codex protocol (`turn/start` input) | Four methods: `file`, `stdin`, `arg`, `env` |
@@ -171,7 +171,7 @@ opportunistically.
 For the headless/daemon use case specifically, here's how the two specs align:
 
 | Daemon Capability | Symphony | T.E.M.P.A.D. | Verdict |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Poll loop | ✅ | ✅ | Equivalent |
 | Candidate selection | ✅ | ✅ | Equivalent |
 | Priority sorting | ✅ | ✅ | Equivalent |
