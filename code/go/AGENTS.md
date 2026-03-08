@@ -11,7 +11,7 @@ Module: `github.com/oneneural/tempad`
 ## Critical Documents — Read These First
 
 | Document | Location | Version | Purpose |
-|----------|----------|---------|---------|
+| ---------- | ---------- | --------- | --------- |
 | **Spec** | [`../../docs/SPEC_v1.md`](../../docs/SPEC_v1.md) | 1.0.0 | Source of truth for **what** TEMPAD does |
 | **Architecture (Go)** | [`docs/ARCHITECTURE_GO_v1.md`](docs/ARCHITECTURE_GO_v1.md) | 1.0.0 | Source of truth for **how** to build it in Go |
 | **Product Backlog** | [`docs/PRODUCT_BACKLOG_v1.md`](docs/PRODUCT_BACKLOG_v1.md) | 1.0.0 | All 57 tickets with work items and acceptance criteria |
@@ -29,7 +29,7 @@ Module: `github.com/oneneural/tempad`
 
 ## Repository Structure
 
-```
+```text
 code/go/                                 ← Go implementation root
 ├── cmd/tempad/                          ← CLI (Cobra): main, init, validate, clean
 ├── internal/
@@ -88,7 +88,7 @@ Do NOT use the naive approach — these are validated corrections:
 
 5-level merge (see `internal/config/resolve.go`):
 
-```
+```text
 CLI flags > User (~/.tempad/config.yaml) > Repo (WORKFLOW.md front matter) > Env ($VAR) > Defaults
 ```
 
@@ -124,7 +124,7 @@ Implements T-PXYY."
 
 ### Commit Convention
 
-```
+```text
 <type>(<scope>): <description>
 
 Types:  feat, fix, refactor, test, docs, chore, ci
@@ -134,7 +134,7 @@ Scopes: domain, config, tracker, linear, workspace, prompt, agent,
 
 ### Branch Naming
 
-```
+```text
 feat/pX-YY-short-description
 ```
 

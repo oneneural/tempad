@@ -244,48 +244,57 @@ git log --all --full-history -- "kanban/done/p2-00-*.md"
 ## What Goes in Each Folder
 
 ### plans/
+
 - Master plan documents for each phase
 - Overview of all tasks, priorities, and dependencies
 
 ### todo/
+
 - Tasks ready to be started
 - Should have all prerequisites complete
 - Ordered by dependency and priority
 
 ### in-progress/
+
 - Tasks actively being worked on
 - Ideally 1-2 tasks maximum
 - Your current focus
 
 ### done/
+
 - Completed tasks with all acceptance criteria met
 - Serves as completion history
 - Reference for similar future tasks
 
 ### parked/
+
 - Tasks deferred to a later phase
 - Not needed for current development work
 - Should be documented in master plan with reason and revisit criteria
 
 ### handoffs/
+
 - Context documents for session/agent handoffs
 - Preserves state and decisions across work boundaries
 
 ## Best Practices
 
 ### Before Starting
+
 - Read the master plan first
 - Check task dependencies
 - Understand acceptance criteria
 - Review the relevant spec and architecture sections (listed in each task)
 
 ### While Working
+
 - Follow step-by-step instructions in task file
 - Check off items as you complete them
 - Run `go build ./cmd/tempad && go test -race ./...` after each change
 - Document any issues or deviations
 
 ### When Completing
+
 - Verify all acceptance criteria met
 - All Go checks pass (build, test, vet)
 - Update master plan progress

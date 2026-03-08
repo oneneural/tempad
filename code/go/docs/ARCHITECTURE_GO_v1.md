@@ -1,7 +1,7 @@
 # TEMPAD Go Architecture
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Module** | `github.com/oneneural/tempad` |
 | **Language** | Go 1.22+ |
@@ -90,7 +90,7 @@ graph TB
 
 ## 3. Directory Structure
 
-```
+```text
 code/go/
 ├── cmd/
 │   └── tempad/
@@ -389,7 +389,7 @@ stateDiagram-v2
 
 The orchestrator owns all mutable state. No other goroutine reads or writes `OrchestratorState`. Communication is via channels.
 
-```
+```text
                     ┌─────────────────────────────┐
                     │     Orchestrator Goroutine   │
                     │                              │
@@ -417,6 +417,7 @@ The orchestrator owns all mutable state. No other goroutine reads or writes `Orc
 ```
 
 **Key rules:**
+
 - Only the orchestrator goroutine mutates `state`.
 - Workers send `WorkerResult` structs on `workerResults` channel and then exit.
 - Retry timers use `time.AfterFunc` which sends on `retryTimers` channel.
@@ -427,7 +428,7 @@ The orchestrator owns all mutable state. No other goroutine reads or writes `Orc
 
 Bubble Tea has its own event loop (`tea.Program`). The TUI model receives messages (keyboard input, poll results, claim outcomes) and returns updated state + commands.
 
-```
+```text
                     ┌──────────────────────────────┐
                     │      tea.Program event loop   │
                     │                               │
@@ -453,6 +454,7 @@ Bubble Tea has its own event loop (`tea.Program`). The TUI model receives messag
 ```
 
 **Key rules:**
+
 - All state lives in the `tea.Model`. No shared mutable state.
 - Background work (tracker API calls, workspace prep) runs via `tea.Cmd` functions that return `tea.Msg`.
 - The poll loop is a repeating `tea.Tick` command.
@@ -473,7 +475,7 @@ These are stateless or request-scoped — called by the orchestrator or TUI but 
 
 ### 6.1 Startup Sequence (Both Modes)
 
-```
+```text
 main.go
   │
   ├─→ config.LoadUserConfig("~/.tempad/config.yaml")
@@ -585,7 +587,7 @@ flowchart TD
 
 ### 6.4 Worker Exit → Retry Flow
 
-```
+```text
 workerResults channel receives WorkerResult
   │
   ├─→ remove from state.running
@@ -755,6 +757,7 @@ In TUI mode, the Bubble Tea model receives a `ConfigReloadMsg` and updates its i
 ### 8.1 Queries
 
 **Candidate fetch:**
+
 ```graphql
 query CandidateIssues($projectSlug: String!, $states: [String!]!, $after: String) {
   issues(
@@ -776,6 +779,7 @@ query CandidateIssues($projectSlug: String!, $states: [String!]!, $after: String
 Plus a second query for issues assigned to current user (resumption).
 
 **State refresh (reconciliation):**
+
 ```graphql
 query IssueStates($ids: [String!]!) {
   nodes(ids: $ids) {
@@ -788,6 +792,7 @@ query IssueStates($ids: [String!]!) {
 ```
 
 **Assignment mutation:**
+
 ```graphql
 mutation AssignIssue($id: String!, $assigneeId: String!) {
   issueUpdate(id: $id, input: { assigneeId: $assigneeId }) {
@@ -852,12 +857,14 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 1: Foundation (CLI + Config + Workflow Loader)
 
 **Deliverables:**
+
 - `cmd/tempad/main.go` — Cobra CLI with `tempad`, `tempad init`, `tempad validate`
 - `internal/config/` — Full config layer: user config, workflow parsing, merge, defaults, validation
 - `internal/domain/` — All domain structs
 - `internal/prompt/` — Liquid template builder
 
 **Exit criteria:**
+
 - `tempad init` creates `~/.tempad/config.yaml` with commented defaults
 - `tempad validate` loads a WORKFLOW.md, merges config, reports errors or "config valid"
 - Unit tests for config merge precedence, YAML parsing, $VAR resolution, template rendering
@@ -865,11 +872,13 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 2: Tracker Client (Linear)
 
 **Deliverables:**
+
 - `internal/tracker/` — Client interface + Linear implementation
 - All 6 operations: FetchCandidateIssues, FetchIssueStatesByIDs, FetchIssuesByStates, FetchIssue, AssignIssue, UnassignIssue
 - Pagination, normalization, error categorization
 
 **Exit criteria:**
+
 - Integration test against Linear API (with real or mock credentials)
 - Correct normalization: labels lowercase, priorities as int, blockers resolved
 - Claim flow works: assign → fetch → verify
@@ -877,11 +886,13 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 3: Workspace Manager + Hooks
 
 **Deliverables:**
+
 - `internal/workspace/` — Manager, hooks, cleanup
 - Path sanitization, root containment checks
 - Hook execution via `bash -lc`, with timeout
 
 **Exit criteria:**
+
 - Deterministic workspace paths per issue identifier
 - `after_create` runs only on new workspace
 - `before_run` failure aborts attempt
@@ -890,12 +901,14 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 4: TUI Mode
 
 **Deliverables:**
+
 - `internal/tui/` — Full Bubble Tea application
 - `internal/claim/` — Shared claim logic
 - Task board with live polling, keyboard navigation, selection
 - Claim → workspace → IDE open flow
 
 **Exit criteria:**
+
 - `tempad` (no flags) shows live task board from Linear
 - Selecting a task claims it, prepares workspace, opens IDE
 - Failed claim shows error, returns to board
@@ -905,11 +918,13 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 5: Daemon Mode Orchestrator
 
 **Deliverables:**
+
 - `internal/orchestrator/` — Full orchestrator with select loop
 - `internal/agent/` — Subprocess launcher with all 4 prompt delivery methods
 - Poll → dispatch → reconcile → retry lifecycle
 
 **Exit criteria:**
+
 - `tempad --daemon` auto-dispatches issues
 - Concurrency limits respected (global + per-state)
 - Agent exit code 0 → continuation retry (1s)
@@ -922,12 +937,14 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 6: Hot Reload + Logging + Polish
 
 **Deliverables:**
+
 - `internal/config/watcher.go` — fsnotify-based WORKFLOW.md watcher
 - `internal/logging/` — slog setup, file sink, rotation
 - `tempad clean` and `tempad clean <identifier>` commands
 - Startup terminal workspace cleanup
 
 **Exit criteria:**
+
 - Editing WORKFLOW.md mid-run applies new config to next tick
 - Invalid reload keeps last known good config
 - Structured logs with issue context
@@ -936,10 +953,12 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 7: HTTP Server Extension
 
 **Deliverables:**
+
 - `internal/server/` — Chi-based HTTP server
 - `GET /`, `GET /api/v1/state`, `GET /api/v1/<identifier>`, `POST /api/v1/refresh`
 
 **Exit criteria:**
+
 - `tempad --daemon --port 8080` serves JSON API
 - State endpoint shows running sessions, retry queue, aggregates
 - Refresh endpoint triggers immediate poll
@@ -947,6 +966,7 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 ### Phase 8: Testing + Hardening
 
 **Deliverables:**
+
 - Unit tests for every package
 - Integration tests with mock tracker
 - Smoke test script for real Linear
@@ -954,6 +974,7 @@ func Render(templateStr string, issue domain.Issue, attempt *int) (string, error
 - Goroutine leak detection in tests (`go.uber.org/goleak`)
 
 **Exit criteria:**
+
 - Full test suite passes
 - No race conditions
 - No goroutine leaks
@@ -1017,6 +1038,7 @@ graph LR
 | Test assertions | `github.com/stretchr/testify` | Latest stable |
 
 **Not needed (stdlib covers it):**
+
 - HTTP client → `net/http`
 - JSON → `encoding/json`
 - Subprocess → `os/exec`

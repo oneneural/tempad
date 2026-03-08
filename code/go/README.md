@@ -1,12 +1,15 @@
 # TEMPAD — Go Implementation
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Module** | `github.com/oneneural/tempad` |
 | **Go** | 1.22+ |
 | **Spec** | [`docs/SPEC_v1.md`](../../docs/SPEC_v1.md) v1.0.0 |
 | **Architecture** | [`docs/ARCHITECTURE_GO_v1.md`](./docs/ARCHITECTURE_GO_v1.md) v1.0.0 |
+
+> [!WARNING]
+> TEMPAD is in active development. Phase 1 (Foundation) is complete.
 
 ## Quick Start
 
@@ -24,7 +27,7 @@ go vet ./...
 
 ## Package Layout
 
-```
+```text
 cmd/tempad/              CLI entry points (Cobra)
 ├── main.go              Root command — TUI vs daemon mode switch
 ├── init.go              tempad init — scaffold ~/.tempad/config.yaml
@@ -51,7 +54,7 @@ internal/
 ### Current (Phase 1)
 
 | Package | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `spf13/cobra` | CLI framework |
 | `osteele/liquid` | Liquid template engine |
 | `stretchr/testify` | Test assertions |
@@ -60,7 +63,7 @@ internal/
 ### Upcoming (Phases 2-8)
 
 | Package | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `charmbracelet/bubbletea` | TUI framework (Elm Architecture) |
 | `charmbracelet/lipgloss` | TUI styling |
 | `charmbracelet/glamour` | Markdown rendering in TUI |
@@ -106,7 +109,7 @@ Full research details: [`kanban/handoffs/research-findings.md`](kanban/handoffs/
 
 ### Commit Convention
 
-```
+```text
 <type>(<scope>): <description>
 
 Types:  feat, fix, refactor, test, docs, chore, ci
@@ -116,7 +119,7 @@ Scopes: domain, config, tracker, linear, workspace, prompt, agent,
 
 ### Branch Naming
 
-```
+```text
 feat/pX-YY-short-description
 ```
 

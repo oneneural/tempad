@@ -3,7 +3,7 @@
 **Temporal Execution & Management Poll-Agent Dispatcher**
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Module** | `github.com/oneneural/tempad` |
 | **Date** | 2026-03-08 |
@@ -93,7 +93,7 @@ Stdlib covers: HTTP client (`net/http`), JSON (`encoding/json`), subprocess (`os
 
 ### Directory Structure
 
-```
+```text
 code/go/
 ├── cmd/tempad/
 │   ├── main.go            # Entry point: parse flags, select mode, run
@@ -288,7 +288,7 @@ GOOS=linux GOARCH=amd64 go build -o tempad-linux-amd64 ./cmd/tempad
 
 ### Phase Dependency Graph
 
-```
+```text
 Phase 1 (Foundation) ──┬──→ Phase 2 (Tracker) ──┬──→ Phase 4 (TUI) ──────┬──→ Phase 6 (Polish) ──┬──→ Phase 8 (Hardening)
                        │                         │                         │                        │
                        └──→ Phase 3 (Workspace) ─┤──→ Phase 5 (Daemon) ──┼──→ Phase 7 (HTTP) ─────┘

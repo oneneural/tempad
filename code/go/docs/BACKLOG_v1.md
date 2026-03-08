@@ -1,7 +1,7 @@
 # TEMPAD Implementation Backlog
 
 | | |
-|---|---|
+| --- | --- |
 | **Version** | 1.0.0 |
 | **Module** | `github.com/oneneural/tempad` |
 | **Date** | 2026-03-08 |
@@ -16,6 +16,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** `tempad init` and `tempad validate` work. All domain types defined. Config loads, merges, validates.
 
 ### T-P100: Initialize Go module and project scaffold
+
 - **Files:** `code/go/go.mod`, `code/go/cmd/tempad/main.go`, `code/go/internal/` directory tree
 - **Spec:** Section 18.1
 - **Work:**
@@ -32,6 +33,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P101: Define all domain model structs
+
 - **Files:** `internal/domain/issue.go`, `internal/domain/workspace.go`, `internal/domain/run.go`, `internal/domain/state.go`
 - **Spec:** Section 4.1 (all subsections), Section 4.2
 - **Work:**
@@ -55,6 +57,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P102: Workflow loader — parse WORKFLOW.md
+
 - **Files:** `internal/config/workflow.go`
 - **Spec:** Section 6.1, 6.2, 6.3, 6.5
 - **Work:**
@@ -79,6 +82,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P103: User config loader
+
 - **Files:** `internal/config/user.go`
 - **Spec:** Section 7.1, 7.2, 7.3
 - **Work:**
@@ -107,6 +111,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P104: Environment variable resolution
+
 - **Files:** `internal/config/config.go` (or separate `resolve.go`)
 - **Spec:** Section 8.1 (item 4), Section 6.3.1 (api_key `$VAR`)
 - **Work:**
@@ -125,6 +130,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P105: ServiceConfig struct and merge logic
+
 - **Files:** `internal/config/config.go`, `internal/config/loader.go`
 - **Spec:** Section 8.1, 8.4, Section 4.1.4
 - **Work:**
@@ -166,6 +172,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P106: Dispatch preflight validation
+
 - **Files:** `internal/config/validation.go`
 - **Spec:** Section 8.3
 - **Work:**
@@ -191,6 +198,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P107: Cobra CLI skeleton with `init` and `validate` commands
+
 - **Files:** `cmd/tempad/main.go` (expand), `cmd/tempad/init.go`, `cmd/tempad/validate.go`
 - **Spec:** Section 18.1, 18.2
 - **Work:**
@@ -219,6 +227,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P108: Prompt builder with Liquid templates
+
 - **Files:** `internal/prompt/builder.go`
 - **Spec:** Section 6.4, Section 14 (all subsections)
 - **Work:**
@@ -251,6 +260,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P109: Phase 1 integration test
+
 - **Files:** `cmd/tempad/main_test.go` or `internal/config/integration_test.go`
 - **Spec:** Section 20.1 (Config and Workflow), Section 18.1
 - **Work:**
@@ -272,6 +282,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** All 6 tracker operations work against Linear's GraphQL API. Issues are normalized into domain model.
 
 ### T-P200: Tracker client interface and error types
+
 - **Files:** `internal/tracker/client.go`, `internal/tracker/errors.go`
 - **Spec:** Section 13.1, 13.4
 - **Work:**
@@ -296,6 +307,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P201: Linear GraphQL query/mutation builders
+
 - **Files:** `internal/tracker/linear/graphql.go`
 - **Spec:** Section 13.2, Architecture doc Section 8.1
 - **Work:**
@@ -319,6 +331,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P202: Linear HTTP transport and pagination
+
 - **Files:** `internal/tracker/linear/client.go`, `internal/tracker/linear/pagination.go`
 - **Spec:** Section 13.2
 - **Work:**
@@ -343,6 +356,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P203: Issue normalization (Linear → domain.Issue)
+
 - **Files:** `internal/tracker/linear/normalize.go`
 - **Spec:** Section 13.3, Section 4.1.1
 - **Work:**
@@ -366,6 +380,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P204: Implement all 6 tracker operations
+
 - **Files:** `internal/tracker/linear/client.go` (expand)
 - **Spec:** Section 13.1
 - **Work:**
@@ -388,6 +403,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P205: Tracker client integration smoke test
+
 - **Files:** `internal/tracker/linear/integration_test.go`
 - **Spec:** Section 20.3
 - **Work:**
@@ -410,6 +426,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** Deterministic workspace creation, hook execution, safety invariants, cleanup.
 
 ### T-P300: Workspace path resolution and safety invariants
+
 - **Files:** `internal/workspace/manager.go`
 - **Spec:** Section 12.1, 12.2, 12.6
 - **Work:**
@@ -433,6 +450,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P301: Hook execution engine
+
 - **Files:** `internal/workspace/hooks.go`
 - **Spec:** Section 12.4, Section 6.3.4
 - **Work:**
@@ -455,6 +473,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P302: Workspace Prepare lifecycle
+
 - **Files:** `internal/workspace/manager.go` (expand)
 - **Spec:** Section 12.2, 12.3, 12.4
 - **Work:**
@@ -477,6 +496,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P303: Workspace cleanup (terminal + manual)
+
 - **Files:** `internal/workspace/cleanup.go`
 - **Spec:** Section 10.8, 12.5, 18.1 (clean command)
 - **Work:**
@@ -500,6 +520,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P304: `tempad clean` CLI commands
+
 - **Files:** `cmd/tempad/clean.go`
 - **Spec:** Section 18.1
 - **Work:**
@@ -521,6 +542,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** `tempad` (default, no flags) shows a live task board, lets developer select → claim → workspace → IDE.
 
 ### T-P400: Claim mechanism (shared by TUI + daemon)
+
 - **Files:** `internal/claim/claimer.go`
 - **Spec:** Section 5.1, 5.2, 5.3
 - **Work:**
@@ -542,6 +564,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P401: Bubble Tea app model and message types
+
 - **Files:** `internal/tui/app.go`, `internal/tui/messages.go`
 - **Spec:** Section 9.1
 - **Work:**
@@ -569,6 +592,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P402: Task board view — rendering
+
 - **Files:** `internal/tui/board.go`, `internal/tui/styles.go`
 - **Spec:** Section 9.2
 - **Work:**
@@ -593,6 +617,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P403: Task board — keyboard navigation and actions
+
 - **Files:** `internal/tui/keys.go`, `internal/tui/app.go` (Update method)
 - **Spec:** Section 9.5
 - **Work:**
@@ -618,6 +643,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P404: Task detail view
+
 - **Files:** `internal/tui/detail.go`
 - **Spec:** Section 9.5
 - **Work:**
@@ -642,6 +668,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P405: Poll loop and live refresh
+
 - **Files:** `internal/tui/app.go` (expand Update)
 - **Spec:** Section 9.4
 - **Work:**
@@ -663,6 +690,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P406: Task selection flow — claim → workspace → IDE
+
 - **Files:** `internal/tui/app.go` (expand Update)
 - **Spec:** Section 9.3
 - **Work:**
@@ -686,6 +714,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P407: Release claimed task from TUI
+
 - **Files:** `internal/tui/app.go` (expand)
 - **Spec:** Section 5.3, 9.5
 - **Work:**
@@ -701,6 +730,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P408: TUI mode entry point
+
 - **Files:** `cmd/tempad/main.go` (expand root command)
 - **Spec:** Section 9.1
 - **Work:**
@@ -726,6 +756,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** `tempad --daemon` runs fully autonomous: poll → claim → dispatch → monitor → retry → reconcile.
 
 ### T-P500: Orchestrator runtime state
+
 - **Files:** `internal/orchestrator/orchestrator.go`
 - **Spec:** Section 4.1.8, Section 10.2.1
 - **Work:**
@@ -749,6 +780,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P501: Orchestrator main select loop
+
 - **Files:** `internal/orchestrator/orchestrator.go` (expand)
 - **Spec:** Section 10.3, Architecture Section 5.3
 - **Work:**
@@ -777,6 +809,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P502: Candidate selection and sorting
+
 - **Files:** `internal/orchestrator/dispatch.go`
 - **Spec:** Section 10.4
 - **Work:**
@@ -799,6 +832,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P503: Concurrency control
+
 - **Files:** `internal/orchestrator/dispatch.go` (expand)
 - **Spec:** Section 10.5
 - **Work:**
@@ -821,6 +855,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P504: Dispatch loop — claim and spawn workers
+
 - **Files:** `internal/orchestrator/dispatch.go` (expand)
 - **Spec:** Section 10.3 (step 5), Section 19.4
 - **Work:**
@@ -844,6 +879,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P505: Agent worker goroutine
+
 - **Files:** `internal/orchestrator/worker.go`
 - **Spec:** Section 19.5, Section 11.3, 11.4, 11.5
 - **Work:**
@@ -872,6 +908,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P506: Prompt delivery (4 methods)
+
 - **Files:** `internal/agent/delivery.go`
 - **Spec:** Section 11.3 (prompt delivery), Section 6.3.5
 - **Work:**
@@ -893,6 +930,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P507: Agent subprocess launcher
+
 - **Files:** `internal/agent/launcher.go` (implement), `internal/agent/process.go`
 - **Spec:** Section 11.1, 11.3, 11.4
 - **Work:**
@@ -920,6 +958,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P508: Agent output handling and stall detection
+
 - **Files:** `internal/agent/output.go`
 - **Spec:** Section 11.4, Section 10.7 (Part A)
 - **Work:**
@@ -943,6 +982,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P509: Worker exit handling
+
 - **Files:** `internal/orchestrator/orchestrator.go` (expand handleWorkerExit)
 - **Spec:** Section 19.6
 - **Work:**
@@ -964,6 +1004,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P510: Retry scheduling and backoff calculation
+
 - **Files:** `internal/orchestrator/retry.go`
 - **Spec:** Section 10.6
 - **Work:**
@@ -994,6 +1035,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P511: Active run reconciliation
+
 - **Files:** `internal/orchestrator/reconcile.go`
 - **Spec:** Section 10.7
 - **Work:**
@@ -1021,6 +1063,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P512: Daemon mode entry point
+
 - **Files:** `cmd/tempad/main.go` (expand for --daemon)
 - **Spec:** Section 10.1, 18.1, 18.2
 - **Work:**
@@ -1040,6 +1083,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P513: Daemon mode integration test
+
 - **Files:** `internal/orchestrator/integration_test.go`
 - **Spec:** Section 20.1 (Daemon Mode)
 - **Work:**
@@ -1066,6 +1110,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** Dynamic config reload, structured logging, production-ready polish.
 
 ### T-P600: WORKFLOW.md file watcher with debounce
+
 - **Files:** `internal/config/watcher.go`
 - **Spec:** Section 8.2
 - **Work:**
@@ -1088,6 +1133,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P601: Structured logging setup
+
 - **Files:** `internal/logging/setup.go`, `internal/logging/rotate.go`
 - **Spec:** Section 15.1, 15.2
 - **Work:**
@@ -1115,6 +1161,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P602: Config reload integration with orchestrator
+
 - **Files:** `internal/orchestrator/orchestrator.go` (expand configReload case)
 - **Spec:** Section 8.2
 - **Work:**
@@ -1135,6 +1182,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P603: Config reload integration with TUI
+
 - **Files:** `internal/tui/app.go` (expand ConfigReloadMsg handling)
 - **Spec:** Section 8.2
 - **Work:**
@@ -1156,6 +1204,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** Optional `--port` enables REST API and dashboard for daemon mode observability.
 
 ### T-P700: HTTP server setup and lifecycle
+
 - **Files:** `internal/server/server.go`
 - **Spec:** Section 15.5
 - **Work:**
@@ -1176,6 +1225,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P701: API endpoints
+
 - **Files:** `internal/server/handlers.go`
 - **Spec:** Section 15.5
 - **Work:**
@@ -1195,6 +1245,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P702: HTTP server CLI integration
+
 - **Files:** `cmd/tempad/main.go` (expand)
 - **Spec:** Section 15.5, 18.1
 - **Work:**
@@ -1215,6 +1266,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 **Goal:** Full test coverage, race detection, goroutine leak prevention, production readiness.
 
 ### T-P800: Unit test coverage for all packages
+
 - **Files:** `*_test.go` across all packages
 - **Spec:** Section 20.1
 - **Work:**
@@ -1237,6 +1289,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P801: Race condition detection
+
 - **Files:** All test files
 - **Spec:** Architecture doc Section 13 (risk: data races)
 - **Work:**
@@ -1251,6 +1304,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P802: Goroutine leak detection
+
 - **Files:** `internal/orchestrator/leak_test.go`
 - **Work:**
   - Add `go.uber.org/goleak` to orchestrator tests
@@ -1265,6 +1319,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P803: End-to-end integration test
+
 - **Files:** `test/e2e_test.go`
 - **Spec:** Section 20.1, 20.3
 - **Work:**
@@ -1287,6 +1342,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P804: Signal handling and graceful shutdown verification
+
 - **Files:** `cmd/tempad/main_test.go`
 - **Spec:** Section 18.2
 - **Work:**
@@ -1304,6 +1360,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 ---
 
 ### T-P805: Real Linear smoke test suite
+
 - **Files:** `test/smoke_test.go`
 - **Spec:** Section 20.3
 - **Work:**
@@ -1340,7 +1397,7 @@ Each ticket has a unique ID (`T-PXXX`), maps to a spec section, lists its file t
 
 ### Parallelization Opportunities
 
-```
+```text
 Phase 1: T-P100 → {T-P101, T-P102, T-P103, T-P104} → T-P105 → T-P106 → T-P107 → T-P108 → T-P109
 Phase 2: {T-P200, T-P201} → T-P202 → T-P203 → T-P204 → T-P205
 Phase 3: {T-P300, T-P301} → T-P302 → T-P303 → T-P304
