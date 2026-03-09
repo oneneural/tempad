@@ -40,6 +40,10 @@ func (m Model) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil // Already in progress.
 		}
 		if issue := m.selectedIssue(); issue != nil {
+			// Skip if task is already active (assigned/running).
+			if issue.Assignee != "" {
+				return m, nil
+			}
 			m.claiming = true
 			m.selectedID = issue.ID
 			m.status = "Claiming..."

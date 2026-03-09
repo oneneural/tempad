@@ -20,9 +20,6 @@ hooks:
   after_create: |
     git clone --depth 1 https://github.com/oneneural/TEMPAD .
 agent:
-  command: "claude"
-  args: "-p"
-  prompt_delivery: arg
   max_concurrent: 3
   max_turns: 20
   max_retries: 5
