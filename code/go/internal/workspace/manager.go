@@ -25,11 +25,15 @@ type Manager struct {
 }
 
 // NewManager creates a workspace manager rooted at the given directory.
-// The root directory must exist and be a directory.
+// The root directory is created automatically if it does not exist.
 func NewManager(root string) (*Manager, error) {
 	abs, err := filepath.Abs(root)
 	if err != nil {
 		return nil, fmt.Errorf("resolve workspace root: %w", err)
+	}
+
+	if err := os.MkdirAll(abs, 0o755); err != nil {
+		return nil, fmt.Errorf("create workspace root: %w", err)
 	}
 
 	info, err := os.Stat(abs)
