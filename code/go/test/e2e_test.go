@@ -50,7 +50,7 @@ func TestE2E_FullLifecycle(t *testing.T) {
 		StallTimeoutMs:     0,
 	}
 
-	orch := orchestrator.New(cfg, tracker, ws, logger)
+	orch := orchestrator.New(cfg, tracker, ws, logger, nil)
 	orch.SetLauncher(launcher)
 
 	// Start HTTP server on ephemeral port.
@@ -107,7 +107,7 @@ func TestE2E_TerminalStateCleanup(t *testing.T) {
 		StallTimeoutMs:     0,
 	}
 
-	orch := orchestrator.New(cfg, tracker, ws, logger)
+	orch := orchestrator.New(cfg, tracker, ws, logger, nil)
 	orch.SetLauncher(launcher)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -158,7 +158,7 @@ func TestE2E_GracefulShutdown(t *testing.T) {
 		StallTimeoutMs:     0,
 	}
 
-	orch := orchestrator.New(cfg, tracker, ws, logger)
+	orch := orchestrator.New(cfg, tracker, ws, logger, nil)
 	orch.SetLauncher(launcher)
 
 	ctx, cancel := context.WithCancel(context.Background())

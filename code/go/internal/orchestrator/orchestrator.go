@@ -13,6 +13,7 @@ import (
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/notify"
 	"github.com/oneneural/tempad/internal/prompt"
 	"github.com/oneneural/tempad/internal/tracker"
 	"github.com/oneneural/tempad/internal/workspace"
@@ -46,6 +47,7 @@ type Orchestrator struct {
 	builder  *prompt.Builder
 	state    *domain.OrchestratorState
 	logger   *slog.Logger
+	notifier *notify.Notifier
 
 	// Channels — all buffered to prevent goroutine leaks.
 	workerResults chan WorkerResult
@@ -63,7 +65,10 @@ type Orchestrator struct {
 }
 
 // New creates a new Orchestrator with initialized state and channels.
-func New(cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager, logger *slog.Logger) *Orchestrator {
+func New(cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager, logger *slog.Logger, notifier *notify.Notifier) *Orchestrator {
+	if notifier == nil {
+		notifier = notify.Noop()
+	}
 	maxConcurrent := cfg.MaxConcurrent
 	if maxConcurrent <= 0 {
 		maxConcurrent = 5
@@ -77,6 +82,8 @@ func New(cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager
 		builder:  prompt.NewBuilder(),
 		state:    domain.NewOrchestratorState(cfg.PollIntervalMs, maxConcurrent),
 		logger:   logger,
+
+		notifier: notifier,
 
 		workerResults: make(chan WorkerResult, maxConcurrent),
 		retryTimers:   make(chan RetrySignal, maxConcurrent),
@@ -210,6 +217,8 @@ func (o *Orchestrator) handleWorkerExit(ctx context.Context, result WorkerResult
 	if result.ExitCode == 0 {
 		// Normal exit — mark completed, schedule continuation retry (1s).
 		o.state.Completed[result.IssueID] = true
+		o.notifier.Send(notify.EventAgentCompleted, "TEMPAD: Task Completed",
+			fmt.Sprintf("%s (exit 0, %s)", result.Identifier, result.Duration.Truncate(time.Second)))
 		o.scheduleRetry(ctx, result.IssueID, result.Identifier, result.Attempt, true, "")
 	} else {
 		// Failure — schedule exponential backoff retry.
@@ -217,6 +226,8 @@ func (o *Orchestrator) handleWorkerExit(ctx context.Context, result WorkerResult
 		if result.Err != nil {
 			errMsg = result.Err.Error()
 		}
+		o.notifier.Send(notify.EventAgentFailed, "TEMPAD: Task Failed",
+			fmt.Sprintf("%s (exit %d, attempt %d)", result.Identifier, result.ExitCode, result.Attempt+1))
 		o.scheduleRetry(ctx, result.IssueID, result.Identifier, result.Attempt+1, false, errMsg)
 	}
 }
@@ -254,6 +265,8 @@ func (o *Orchestrator) handleRetry(ctx context.Context, signal RetrySignal) {
 			"issue", signal.Identifier,
 			"attempt", signal.Attempt,
 		)
+		o.notifier.Send(notify.EventRetriesExhausted, "TEMPAD: Retries Exhausted",
+			fmt.Sprintf("%s: claim released after %d attempts", signal.Identifier, signal.Attempt))
 		_ = claim.Release(ctx, o.tracker, signal.IssueID)
 		delete(o.state.Claimed, signal.IssueID)
 		return
@@ -305,6 +318,8 @@ func (o *Orchestrator) scheduleRetry(ctx context.Context, issueID, identifier st
 			"issue", identifier,
 			"attempt", attempt,
 		)
+		o.notifier.Send(notify.EventRetriesExhausted, "TEMPAD: Retries Exhausted",
+			fmt.Sprintf("%s: claim released after %d attempts", identifier, attempt))
 		_ = claim.Release(ctx, o.tracker, issueID)
 		delete(o.state.Claimed, issueID)
 		return

@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 
 func TestLeak_ShutdownCleansUp(t *testing.T) {
 	cfg := testConfig()
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
@@ -33,7 +33,7 @@ func TestLeak_ShutdownCleansUp(t *testing.T) {
 func TestLeak_RetryTimerCancellation(t *testing.T) {
 	cfg := testConfig()
 	cfg.MaxRetries = 10 // High enough so scheduleRetry doesn't try to release.
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
