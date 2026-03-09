@@ -33,8 +33,9 @@ type UserIDEConfig struct {
 
 // UserAgentConfig holds agent preferences.
 type UserAgentConfig struct {
-	Command string `yaml:"command"` // default agent for daemon mode
-	Args    string `yaml:"args"`    // extra args
+	Command        string `yaml:"command"`        // default agent for daemon mode
+	Args           string `yaml:"args"`           // extra args
+	PromptDelivery string `yaml:"prompt_delivery"` // "file", "stdin", "arg", "env"
 }
 
 // UserDisplayConfig holds display preferences.
@@ -110,8 +111,9 @@ ide:
 
 # Default agent for daemon mode
 agent:
-  command: ""                # e.g. "claude-code --auto", "codex", "opencode"
-  # args: null               # extra arguments (optional)
+  command: ""                # e.g. "claude", "codex", "opencode"
+  # args: ""                 # extra arguments (e.g. "--dangerously-skip-permissions -p")
+  # prompt_delivery: "file"  # how prompt is sent: "file", "stdin", "arg", "env"
 
 # Display preferences
 display:

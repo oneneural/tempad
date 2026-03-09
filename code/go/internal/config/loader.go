@@ -148,6 +148,9 @@ func applyUserConfig(cfg *ServiceConfig, user *UserConfig) {
 	if user.Agent.Args != "" {
 		cfg.AgentArgs = user.Agent.Args
 	}
+	if user.Agent.PromptDelivery != "" {
+		cfg.PromptDelivery = user.Agent.PromptDelivery
+	}
 
 	// Personal: display theme.
 	if user.Display.Theme != "" {
