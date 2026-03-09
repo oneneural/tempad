@@ -319,4 +319,5 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(cleanCmd)
+	rootCmd.AddCommand(setupCmd)
 }
