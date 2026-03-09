@@ -25,7 +25,7 @@ func testConfig() *config.ServiceConfig {
 
 func TestNew(t *testing.T) {
 	cfg := testConfig()
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	require.NotNil(t, o)
 	assert.Equal(t, 1000, o.state.PollIntervalMs)
@@ -39,7 +39,7 @@ func TestNew(t *testing.T) {
 
 func TestRun_ContextCancel(t *testing.T) {
 	cfg := testConfig()
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
@@ -50,7 +50,7 @@ func TestRun_ContextCancel(t *testing.T) {
 
 func TestReloadConfig(t *testing.T) {
 	cfg := testConfig()
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	newCfg := &config.ServiceConfig{PollIntervalMs: 5000, MaxConcurrent: 10}
 	o.ReloadConfig(newCfg)
@@ -64,14 +64,14 @@ func TestReloadConfig(t *testing.T) {
 }
 
 func TestState(t *testing.T) {
-	o := New(testConfig(), nil, nil, testLogger())
+	o := New(testConfig(), nil, nil, testLogger(), nil)
 	state := o.State()
 	assert.NotNil(t, state)
 	assert.Equal(t, 3, state.MaxConcurrentAgents)
 }
 
 func TestApplyNewConfig(t *testing.T) {
-	o := New(testConfig(), nil, nil, testLogger())
+	o := New(testConfig(), nil, nil, testLogger(), nil)
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
@@ -85,7 +85,7 @@ func TestApplyNewConfig(t *testing.T) {
 }
 
 func TestHandleRetry_ContextCanceled(t *testing.T) {
-	o := New(testConfig(), nil, nil, testLogger())
+	o := New(testConfig(), nil, nil, testLogger(), nil)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Already canceled.
@@ -95,7 +95,7 @@ func TestHandleRetry_ContextCanceled(t *testing.T) {
 }
 
 func TestWorkerResultChannel(t *testing.T) {
-	o := New(testConfig(), nil, nil, testLogger())
+	o := New(testConfig(), nil, nil, testLogger(), nil)
 
 	// Send a worker result.
 	o.workerResults <- WorkerResult{

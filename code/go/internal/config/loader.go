@@ -161,6 +161,14 @@ func applyUserConfig(cfg *ServiceConfig, user *UserConfig) {
 	if user.Logging.File != "" {
 		cfg.LogFile = user.Logging.File
 	}
+
+	// Personal: notification preferences.
+	if user.Notifications.Enabled != nil {
+		cfg.NotificationsEnabled = *user.Notifications.Enabled
+	}
+	if len(user.Notifications.Events) > 0 {
+		cfg.NotificationEvents = user.Notifications.Events
+	}
 }
 
 // applyCLIFlags applies command-line flags (highest precedence).

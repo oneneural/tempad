@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/logging"
+	"github.com/oneneural/tempad/internal/notify"
 	"github.com/oneneural/tempad/internal/orchestrator"
 	"github.com/oneneural/tempad/internal/server"
 	"github.com/oneneural/tempad/internal/tracker/linear"
@@ -99,8 +101,14 @@ func runTUI() error {
 		}
 	}
 
+	// Create notifier.
+	notifier := notify.New(notify.Config{
+		Enabled: cfg.NotificationsEnabled,
+		Events:  cfg.NotificationEvents,
+	}, slog.Default())
+
 	// Create and run Bubble Tea program.
-	model := tui.NewModel(ctx, cfg, client, ws, nil)
+	model := tui.NewModel(ctx, cfg, client, ws, nil, notifier)
 	p := tea.NewProgram(model, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		return fmt.Errorf("TUI error: %w", err)
@@ -160,8 +168,14 @@ func runDaemon() error {
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
+	// Create notifier.
+	notifier := notify.New(notify.Config{
+		Enabled: cfg.NotificationsEnabled,
+		Events:  cfg.NotificationEvents,
+	}, logger)
+
 	// Create orchestrator.
-	orch := orchestrator.New(cfg, client, ws, logger)
+	orch := orchestrator.New(cfg, client, ws, logger, notifier)
 
 	// Start HTTP server if --port is specified.
 	if cfg.ServerPort > 0 {

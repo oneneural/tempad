@@ -57,6 +57,10 @@ type ServiceConfig struct {
 	// Server (optional extension)
 	ServerPort int `json:"server_port"`
 
+	// Notifications
+	NotificationsEnabled bool     `json:"notifications_enabled"`
+	NotificationEvents   []string `json:"notification_events"`
+
 	// DryRun skips agent launch in daemon mode; logs the command instead.
 	DryRun bool `json:"dry_run"`
 
@@ -102,5 +106,6 @@ func Defaults() *ServiceConfig {
 		LogLevel:          "info",
 		LogFile:           ExpandHome("~/.tempad/logs/tempad.log"),
 		MaxConcurrentByState: make(map[string]int),
+		NotificationsEnabled: true,
 	}
 }

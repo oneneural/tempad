@@ -253,7 +253,7 @@ func TestIntegration_ClaimAndDispatch(t *testing.T) {
 	cfg := integrationCfg()
 	cfg.MaxConcurrent = 2
 
-	o := New(cfg, tracker, ws, testLogger())
+	o := New(cfg, tracker, ws, testLogger(), nil)
 	o.launcher = launcher
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -291,7 +291,7 @@ func TestIntegration_ContinuationRetry(t *testing.T) {
 	cfg.MaxConcurrent = 1
 	cfg.MaxRetries = 2
 
-	o := New(cfg, tracker, ws, testLogger())
+	o := New(cfg, tracker, ws, testLogger(), nil)
 	o.launcher = launcher
 
 	// Run for enough time to see continuation retries.
@@ -330,7 +330,7 @@ func TestIntegration_FailureRetryMaxExhausted(t *testing.T) {
 	cfg.MaxRetryBackoffMs = 100 // Very short backoff for test.
 	cfg.AgentCommand = "false"
 
-	o := New(cfg, tracker, ws, testLogger())
+	o := New(cfg, tracker, ws, testLogger(), nil)
 	o.launcher = launcher
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -366,7 +366,7 @@ func TestIntegration_TerminalStateCleanup(t *testing.T) {
 	cfg.MaxConcurrent = 1
 	cfg.AgentCommand = "sleep 10"
 
-	o := New(cfg, tracker, ws, testLogger())
+	o := New(cfg, tracker, ws, testLogger(), nil)
 	o.launcher = launcher
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -409,7 +409,7 @@ func TestIntegration_ConcurrencyLimit(t *testing.T) {
 	cfg.MaxConcurrent = 2 // Limit to 2.
 	cfg.AgentCommand = "sleep 10"
 
-	o := New(cfg, tracker, ws, testLogger())
+	o := New(cfg, tracker, ws, testLogger(), nil)
 	o.launcher = launcher
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)

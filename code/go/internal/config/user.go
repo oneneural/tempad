@@ -11,11 +11,12 @@ import (
 // UserConfig represents personal preferences from ~/.tempad/config.yaml.
 // See Spec Section 4.1.3, Section 7.
 type UserConfig struct {
-	Tracker  UserTrackerConfig  `yaml:"tracker"`
-	IDE      UserIDEConfig      `yaml:"ide"`
-	Agent    UserAgentConfig    `yaml:"agent"`
-	Display  UserDisplayConfig  `yaml:"display"`
-	Logging  UserLoggingConfig  `yaml:"logging"`
+	Tracker       UserTrackerConfig       `yaml:"tracker"`
+	IDE           UserIDEConfig           `yaml:"ide"`
+	Agent         UserAgentConfig         `yaml:"agent"`
+	Display       UserDisplayConfig       `yaml:"display"`
+	Logging       UserLoggingConfig       `yaml:"logging"`
+	Notifications UserNotificationsConfig `yaml:"notifications"`
 }
 
 // UserTrackerConfig holds tracker-related personal preferences.
@@ -45,6 +46,12 @@ type UserDisplayConfig struct {
 type UserLoggingConfig struct {
 	Level string `yaml:"level"` // "debug", "info", "warn", "error"
 	File  string `yaml:"file"`  // log file path
+}
+
+// UserNotificationsConfig holds notification preferences.
+type UserNotificationsConfig struct {
+	Enabled *bool    `yaml:"enabled"` // pointer to distinguish unset from false
+	Events  []string `yaml:"events"`  // which events trigger (empty = all)
 }
 
 // DefaultUserConfigPath returns the default path to the user config file.

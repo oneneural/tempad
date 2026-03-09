@@ -17,7 +17,7 @@ func TestSelectCandidates_Filtering(t *testing.T) {
 		TrackerIdentity: "me@example.com",
 		MaxConcurrent:   5,
 	}
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	now := time.Now()
 	issues := []domain.Issue{
@@ -52,7 +52,7 @@ func TestSelectCandidates_Sorting(t *testing.T) {
 		TerminalStates: []string{"Done"},
 		MaxConcurrent:  5,
 	}
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	now := time.Now()
 	earlier := now.Add(-1 * time.Hour)
@@ -79,7 +79,7 @@ func TestSelectCandidates_RetrySkipped(t *testing.T) {
 		TerminalStates: []string{"Done"},
 		MaxConcurrent:  5,
 	}
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	now := time.Now()
 	issues := []domain.Issue{
@@ -111,7 +111,7 @@ func TestStateSlotAvailable(t *testing.T) {
 			"in progress": 1,
 		},
 	}
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	// No running issues — should be available.
 	assert.True(t, o.stateSlotAvailable("Todo"))
@@ -135,7 +135,7 @@ func TestStateSlotAvailable(t *testing.T) {
 
 func TestStateSlotAvailable_NoConfig(t *testing.T) {
 	cfg := &config.ServiceConfig{MaxConcurrent: 5}
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	// No per-state config — always available.
 	assert.True(t, o.stateSlotAvailable("Todo"))
@@ -146,7 +146,7 @@ func TestStateSlotAvailable_InvalidLimit(t *testing.T) {
 		MaxConcurrent:        5,
 		MaxConcurrentByState: map[string]int{"todo": -1},
 	}
-	o := New(cfg, nil, nil, testLogger())
+	o := New(cfg, nil, nil, testLogger(), nil)
 
 	// Invalid limit ignored — falls back to global.
 	assert.True(t, o.stateSlotAvailable("Todo"))

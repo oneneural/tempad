@@ -26,7 +26,7 @@ func testOrchestrator() *orchestrator.Orchestrator {
 		PollIntervalMs: 60000,
 		MaxConcurrent:  3,
 	}
-	return orchestrator.New(cfg, nil, nil, testLogger())
+	return orchestrator.New(cfg, nil, nil, testLogger(), nil)
 }
 
 func startTestServer(t *testing.T) (*Server, string) {

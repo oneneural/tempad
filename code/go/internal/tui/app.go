@@ -3,6 +3,7 @@ package tui
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,6 +14,7 @@ import (
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/notify"
 	"github.com/oneneural/tempad/internal/prompt"
 	"github.com/oneneural/tempad/internal/tracker"
 	"github.com/oneneural/tempad/internal/workspace"
@@ -29,9 +31,10 @@ const (
 // Model is the root Bubble Tea model for TUI mode.
 type Model struct {
 	// Dependencies
-	cfg     *config.ServiceConfig
-	tracker tracker.Client
-	ws      *workspace.Manager
+	cfg      *config.ServiceConfig
+	tracker  tracker.Client
+	ws       *workspace.Manager
+	notifier *notify.Notifier
 
 	// View state
 	view viewState
@@ -57,6 +60,9 @@ type Model struct {
 	err    error
 	status string // transient status message
 
+	// New task detection for notifications
+	knownIssueIDs map[string]bool
+
 	// Hot reload
 	reloadCh <-chan *config.ServiceConfig
 
@@ -66,14 +72,19 @@ type Model struct {
 
 // NewModel creates a new TUI model with the given dependencies.
 // reloadCh is optional — pass nil if hot reload is not enabled.
-func NewModel(ctx context.Context, cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager, reloadCh <-chan *config.ServiceConfig) Model {
+func NewModel(ctx context.Context, cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager, reloadCh <-chan *config.ServiceConfig, notifier *notify.Notifier) Model {
+	if notifier == nil {
+		notifier = notify.Noop()
+	}
 	return Model{
-		cfg:      cfg,
-		tracker:  client,
-		ws:       ws,
-		view:     viewBoard,
-		reloadCh: reloadCh,
-		ctx:      ctx,
+		cfg:           cfg,
+		tracker:       client,
+		ws:            ws,
+		notifier:      notifier,
+		view:          viewBoard,
+		knownIssueIDs: make(map[string]bool),
+		reloadCh:      reloadCh,
+		ctx:           ctx,
 	}
 }
 
@@ -113,6 +124,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		m.err = nil
+		// Detect new tasks for notifications.
+		for _, issue := range msg.Available {
+			if !m.knownIssueIDs[issue.ID] {
+				priority := ""
+				if issue.Priority != nil {
+					priority = fmt.Sprintf(" [P%d]", *issue.Priority)
+				}
+				m.notifier.Send(notify.EventNewTask, "TEMPAD: New Task",
+					fmt.Sprintf("%s: %s%s", issue.Identifier, issue.Title, priority))
+			}
+		}
+		// Update known issue set.
+		m.knownIssueIDs = make(map[string]bool, len(msg.Available)+len(msg.Active))
+		for _, issue := range msg.Available {
+			m.knownIssueIDs[issue.ID] = true
+		}
+		for _, issue := range msg.Active {
+			m.knownIssueIDs[issue.ID] = true
+		}
 		m.available = msg.Available
 		m.active = msg.Active
 		m.restoreCursor()
@@ -123,6 +153,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.claiming = false
 			m.err = msg.Err
 			m.status = "Claim failed"
+			m.notifier.Send(notify.EventClaimFailed, "TEMPAD: Claim Failed",
+				fmt.Sprintf("%s was claimed by someone else", msg.Issue.Identifier))
 			return m, nil
 		}
 		m.status = "Preparing workspace..."

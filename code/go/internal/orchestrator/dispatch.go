@@ -6,8 +6,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"fmt"
+
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/notify"
 )
 
 // selectCandidates filters and sorts issues for dispatch eligibility.
@@ -104,6 +107,8 @@ func (o *Orchestrator) dispatch(ctx context.Context, candidates []domain.Issue) 
 				"issue", issue.Identifier,
 				"error", err,
 			)
+			o.notifier.Send(notify.EventClaimFailed, "TEMPAD: Claim Failed",
+				fmt.Sprintf("%s was claimed by someone else", issue.Identifier))
 			continue
 		}
 
@@ -130,6 +135,9 @@ func (o *Orchestrator) dispatch(ctx context.Context, candidates []domain.Issue) 
 		o.lastOutput[issue.ID] = lastOutput
 
 		go o.runWorker(workerCtx, issue, attempt, lastOutput)
+
+		o.notifier.Send(notify.EventAgentStarted, "TEMPAD: Agent Started",
+			fmt.Sprintf("%s: %s (attempt %d)", issue.Identifier, issue.Title, attempt+1))
 
 		o.logger.Info("dispatched",
 			"issue", issue.Identifier,
