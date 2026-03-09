@@ -10,6 +10,7 @@ import (
 
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/logbuf"
 	"github.com/oneneural/tempad/internal/notify"
 )
 
@@ -134,7 +135,14 @@ func (o *Orchestrator) dispatch(ctx context.Context, candidates []domain.Issue) 
 		lastOutput.Store(time.Now().UnixNano())
 		o.lastOutput[issue.ID] = lastOutput
 
-		go o.runWorker(workerCtx, issue, attempt, lastOutput)
+		// Get or create log buffer for this issue.
+		buf := o.logBuffers[issue.ID]
+		if buf == nil {
+			buf = logbuf.NewRingBuffer(logbuf.DefaultCapacity)
+			o.logBuffers[issue.ID] = buf
+		}
+
+		go o.runWorker(workerCtx, issue, attempt, lastOutput, buf)
 
 		o.notifier.Send(notify.EventAgentStarted, "TEMPAD: Agent Started",
 			fmt.Sprintf("%s: %s (attempt %d)", issue.Identifier, issue.Title, attempt+1))

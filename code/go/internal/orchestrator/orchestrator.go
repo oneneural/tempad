@@ -13,6 +13,7 @@ import (
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/logbuf"
 	"github.com/oneneural/tempad/internal/notify"
 	"github.com/oneneural/tempad/internal/prompt"
 	"github.com/oneneural/tempad/internal/tracker"
@@ -62,6 +63,10 @@ type Orchestrator struct {
 
 	// Worker cancel functions for killing agents.
 	workerCancels map[string]func() // issue_id → cancel
+
+	// Log buffers: per-issue ring buffers for streaming agent output.
+	// Persist after worker exit so completed task logs remain viewable.
+	logBuffers map[string]*logbuf.RingBuffer
 }
 
 // New creates a new Orchestrator with initialized state and channels.
@@ -92,12 +97,18 @@ func New(cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager
 		activeTimers:  make(map[string]*time.Timer),
 		lastOutput:    make(map[string]*atomic.Int64),
 		workerCancels: make(map[string]func()),
+		logBuffers:    make(map[string]*logbuf.RingBuffer),
 	}
 }
 
 // State returns the orchestrator's state for external reads (HTTP API).
 func (o *Orchestrator) State() *domain.OrchestratorState {
 	return o.state
+}
+
+// LogBuffer returns the log buffer for a given issue ID, or nil if not found.
+func (o *Orchestrator) LogBuffer(issueID string) *logbuf.RingBuffer {
+	return o.logBuffers[issueID]
 }
 
 // SetLauncher overrides the agent launcher (used in tests).
@@ -206,6 +217,9 @@ func (o *Orchestrator) handleWorkerExit(ctx context.Context, result WorkerResult
 		"attempt", result.Attempt,
 	)
 
+	// Capture run info before removing from running.
+	run := o.state.Running[result.IssueID]
+
 	// Remove from running.
 	delete(o.state.Running, result.IssueID)
 	delete(o.lastOutput, result.IssueID)
@@ -213,6 +227,36 @@ func (o *Orchestrator) handleWorkerExit(ctx context.Context, result WorkerResult
 
 	// Update totals.
 	o.state.AgentTotals.TotalRuntimeSeconds += result.Duration.Seconds()
+
+	// Build completed run for display.
+	now := time.Now()
+	exitCode := result.ExitCode
+	completedRun := &domain.RunAttempt{
+		IssueID:         result.IssueID,
+		IssueIdentifier: result.Identifier,
+		StartedAt:       now.Add(-result.Duration),
+		FinishedAt:      &now,
+		Mode:            "agent",
+		ExitCode:        &exitCode,
+	}
+	if run != nil {
+		completedRun.Attempt = run.Attempt
+		completedRun.StartedAt = run.StartedAt
+	}
+	if result.ExitCode == 0 {
+		completedRun.Status = "succeeded"
+	} else {
+		completedRun.Status = "failed"
+		if result.Err != nil {
+			completedRun.Error = result.Err.Error()
+		}
+	}
+	o.state.AddCompletedRun(completedRun)
+
+	// Write exit log to buffer.
+	if buf := o.logBuffers[result.IssueID]; buf != nil {
+		buf.Write(fmt.Sprintf("Agent exited with code %d after %s", result.ExitCode, result.Duration.Truncate(time.Second)), "tempad")
+	}
 
 	if result.ExitCode == 0 {
 		// Normal exit — mark completed, schedule continuation retry (1s).
@@ -301,7 +345,14 @@ func (o *Orchestrator) handleRetry(ctx context.Context, signal RetrySignal) {
 	lastOutput.Store(time.Now().UnixNano())
 	o.lastOutput[signal.IssueID] = lastOutput
 
-	go o.runWorker(workerCtx, *issue, signal.Attempt, lastOutput)
+	// Get or create log buffer for this issue.
+	buf := o.logBuffers[signal.IssueID]
+	if buf == nil {
+		buf = logbuf.NewRingBuffer(logbuf.DefaultCapacity)
+		o.logBuffers[signal.IssueID] = buf
+	}
+
+	go o.runWorker(workerCtx, *issue, signal.Attempt, lastOutput, buf)
 }
 
 // scheduleRetry schedules a retry timer for an issue.

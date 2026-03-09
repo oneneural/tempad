@@ -80,6 +80,16 @@ func (m Model) updateBoard(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.releaseCmd(issue.ID)
 		}
 		return m, nil
+
+	case "l":
+		// Open log pane for selected task (orchestrator mode only).
+		if m.hasOrchestrator() {
+			if issue := m.selectedIssue(); issue != nil {
+				m.view = viewSplit
+				return m, m.openLogPane(issue.ID)
+			}
+		}
+		return m, nil
 	}
 
 	return m, nil

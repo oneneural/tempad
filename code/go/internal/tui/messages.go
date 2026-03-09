@@ -50,3 +50,16 @@ type ConfigReloadMsg struct {
 
 // tickMsg triggers a poll cycle.
 type tickMsg struct{}
+
+// orchTickMsg triggers an orchestrator state refresh.
+type orchTickMsg struct{}
+
+// logTickMsg triggers a log pane update.
+type logTickMsg struct{}
+
+// OrchestratorStateMsg carries orchestrator state for TUI display.
+type OrchestratorStateMsg struct {
+	Running       map[string]*domain.RunAttempt
+	RetryAttempts map[string]*domain.RetryEntry
+	CompletedRuns []*domain.RunAttempt
+}

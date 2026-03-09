@@ -12,13 +12,14 @@ import (
 
 	"github.com/oneneural/tempad/internal/agent"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/logbuf"
 	"github.com/oneneural/tempad/internal/workspace"
 )
 
 // runWorker runs the full worker lifecycle for an issue.
 // This runs in its own goroutine. It sends a WorkerResult when done.
 // lastOutput is pre-allocated by the orchestrator goroutine for stall detection.
-func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attempt int, lastOutput *atomic.Int64) {
+func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attempt int, lastOutput *atomic.Int64, buf *logbuf.RingBuffer) {
 	log := o.logger.With("issue", issue.Identifier, "attempt", attempt)
 
 	// Ensure we always send a result.
@@ -36,6 +37,7 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 
 	// 1. Prepare workspace.
 	log.Info("preparing workspace")
+	buf.Write("Preparing workspace...", "tempad")
 	hooks := workspace.HookConfig{
 		AfterCreate: o.cfg.AfterCreateHook,
 		BeforeRun:   o.cfg.BeforeRunHook,
@@ -100,6 +102,7 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 
 	// Launch agent with a short reference prompt pointing to TEMPAD_TASK.md.
 	log.Info("launching agent")
+	buf.Write(fmt.Sprintf("Launching agent: %s", launchOpts.Command), "tempad")
 	handle, err := o.launcher.Launch(ctx, launchOpts)
 	if err != nil {
 		result.Err = fmt.Errorf("agent launch: %w", err)
@@ -107,9 +110,9 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 		return
 	}
 
-	// Drain stdout/stderr in background, updating stall timestamp.
-	go drainOutput(handle.Stdout, lastOutput)
-	go drainOutput(handle.Stderr, lastOutput)
+	// Drain stdout/stderr in background, updating stall timestamp + log buffer.
+	go drainOutput(handle.Stdout, lastOutput, buf, "stdout")
+	go drainOutput(handle.Stderr, lastOutput, buf, "stderr")
 
 	// 5. Wait for exit.
 	exitResult, err := handle.Wait()
@@ -137,10 +140,14 @@ func (o *Orchestrator) runWorker(ctx context.Context, issue domain.Issue, attemp
 	)
 }
 
-// drainOutput reads from r line by line, updating the lastOutput timestamp.
-func drainOutput(r io.Reader, lastOutput *atomic.Int64) {
+// drainOutput reads from r line by line, updating the lastOutput timestamp
+// and writing to the log ring buffer.
+func drainOutput(r io.Reader, lastOutput *atomic.Int64, buf *logbuf.RingBuffer, stream string) {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		lastOutput.Store(time.Now().UnixNano())
+		if buf != nil {
+			buf.Write(scanner.Text(), stream)
+		}
 	}
 }

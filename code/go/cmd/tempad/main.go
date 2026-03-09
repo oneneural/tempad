@@ -44,17 +44,23 @@ var rootCmd = &cobra.Command{
 In TUI mode (default), it shows a live task board from your issue tracker,
 lets you pick tasks, and opens your IDE.
 
-In daemon mode (--daemon), it auto-dispatches coding agents headlessly.`,
+In daemon mode (--daemon), it shows the TUI board with an embedded orchestrator
+that auto-dispatches coding agents, with streaming log output.
+
+In headless mode (--headless), it runs the orchestrator without TUI for CI/servers.`,
 	Version: Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if cliFlags.Headless {
+			return runHeadless()
+		}
 		if cliFlags.Daemon {
-			return runDaemon()
+			return runTUIWithOrchestrator()
 		}
 		if cliFlags.DryRun {
-			fmt.Fprintf(os.Stderr, "Warning: --dry-run only applies to daemon mode (--daemon)\n")
+			fmt.Fprintf(os.Stderr, "Warning: --dry-run only applies to daemon/headless mode\n")
 		}
 		if cliFlags.Port > 0 {
-			fmt.Fprintf(os.Stderr, "Warning: --port is only used in daemon mode (--daemon)\n")
+			fmt.Fprintf(os.Stderr, "Warning: --port is only used in daemon/headless mode\n")
 		}
 		return runTUI()
 	},
@@ -116,7 +122,97 @@ func runTUI() error {
 	return nil
 }
 
-func runDaemon() error {
+func runTUIWithOrchestrator() error {
+	// Load and merge config.
+	cfg, _, err := config.Load(&cliFlags)
+	if err != nil {
+		return fmt.Errorf("config error: %w", err)
+	}
+
+	// Validate for daemon mode (requires agent.command).
+	if err := config.ValidateForStartup(cfg, "daemon"); err != nil {
+		return err
+	}
+
+	// Set up structured logger (file-based for daemon, keeps TUI clean).
+	logger := logging.Setup(logging.Config{
+		Level: cfg.LogLevel,
+		File:  cfg.LogFile,
+		Mode:  "daemon",
+	})
+
+	// Create tracker client.
+	client := linear.NewLinearClient(linear.Config{
+		Endpoint:       cfg.TrackerEndpoint,
+		APIKey:         cfg.TrackerAPIKey,
+		ProjectSlug:    cfg.TrackerProjectSlug,
+		Identity:       cfg.TrackerIdentity,
+		ActiveStates:   cfg.ActiveStates,
+		TerminalStates: cfg.TerminalStates,
+	})
+
+	// Create workspace manager.
+	ws, err := workspace.NewManager(cfg.WorkspaceRoot)
+	if err != nil {
+		return fmt.Errorf("workspace manager: %w", err)
+	}
+
+	// Resolve tracker identity.
+	ctx := context.Background()
+	if err := client.ResolveIdentity(ctx); err != nil {
+		logger.Warn("failed to resolve tracker identity", "error", err)
+	}
+
+	// Startup terminal workspace cleanup.
+	if terminalIssues, fetchErr := client.FetchIssuesByStates(ctx, cfg.TerminalStates); fetchErr == nil {
+		if cleaned, cleanErr := ws.CleanTerminal(terminalIssues); cleanErr == nil && cleaned > 0 {
+			logger.Info("cleaned terminal workspaces", "count", cleaned)
+		}
+	}
+
+	// Set up signal handling.
+	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	// Create notifier.
+	notifier := notify.New(notify.Config{
+		Enabled: cfg.NotificationsEnabled,
+		Events:  cfg.NotificationEvents,
+	}, logger)
+
+	// Create orchestrator.
+	orch := orchestrator.New(cfg, client, ws, logger, notifier)
+
+	// Start HTTP server if --port is specified.
+	if cfg.ServerPort > 0 {
+		srv, err := server.New(cfg.ServerPort, orch, logger)
+		if err != nil {
+			return fmt.Errorf("HTTP server: %w", err)
+		}
+		go srv.Serve(ctx)
+		logger.Info("HTTP server started", "addr", srv.Addr())
+	}
+
+	// Start orchestrator in background goroutine.
+	go func() {
+		if runErr := orch.Run(ctx); runErr != nil {
+			logger.Error("orchestrator error", "error", runErr)
+		}
+	}()
+
+	// Create TUI model with embedded orchestrator.
+	model := tui.NewModelWithOrchestrator(ctx, cfg, client, ws, nil, notifier, orch)
+	p := tea.NewProgram(model, tea.WithAltScreen())
+	if _, err := p.Run(); err != nil {
+		return fmt.Errorf("TUI error: %w", err)
+	}
+
+	// Stop orchestrator when TUI exits.
+	stop()
+	return nil
+}
+
+func runHeadless() error {
 	// Load and merge config.
 	cfg, _, err := config.Load(&cliFlags)
 	if err != nil {
@@ -187,7 +283,7 @@ func runDaemon() error {
 		logger.Info("HTTP server started", "addr", srv.Addr())
 	}
 
-	logger.Info("daemon starting",
+	logger.Info("headless daemon starting",
 		"poll_interval_ms", cfg.PollIntervalMs,
 		"max_concurrent", cfg.MaxConcurrent,
 		"agent_command", cfg.AgentCommand,
@@ -201,7 +297,9 @@ func runDaemon() error {
 func init() {
 	// Global flags.
 	rootCmd.PersistentFlags().BoolVar(&cliFlags.Daemon, "daemon", false,
-		"Run in headless daemon mode")
+		"Run TUI with embedded orchestrator (auto-dispatch agents)")
+	rootCmd.PersistentFlags().BoolVar(&cliFlags.Headless, "headless", false,
+		"Run headless daemon mode for CI/servers (no TUI)")
 	rootCmd.PersistentFlags().StringVar(&cliFlags.WorkflowPath, "workflow", "",
 		"Path to WORKFLOW.md (default: ./WORKFLOW.md)")
 	rootCmd.PersistentFlags().StringVar(&cliFlags.Identity, "identity", "",
@@ -215,7 +313,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cliFlags.LogLevel, "log-level", "",
 		"Log level (debug, info, warn, error)")
 	rootCmd.PersistentFlags().BoolVar(&cliFlags.DryRun, "dry-run", false,
-		"Run full pipeline but skip agent launch (daemon mode only)")
+		"Run full pipeline but skip agent launch (daemon/headless mode only)")
 
 	// Subcommands.
 	rootCmd.AddCommand(initCmd)
