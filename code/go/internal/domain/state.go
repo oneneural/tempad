@@ -2,6 +2,9 @@ package domain
 
 import "sync"
 
+// MaxCompletedRuns is the maximum number of completed runs to keep for display.
+const MaxCompletedRuns = 20
+
 // OrchestratorState is the single authoritative in-memory state owned by
 // the daemon-mode orchestrator. Only the orchestrator goroutine may mutate
 // this struct. See Spec Section 4.1.8.
@@ -25,6 +28,10 @@ type OrchestratorState struct {
 	// Completed is the set of issue IDs that have completed at least once.
 	// Bookkeeping only — not used for dispatch gating.
 	Completed map[string]bool `json:"completed"`
+
+	// CompletedRuns holds recently completed run attempts for TUI display.
+	// Ordered newest-first, capped at MaxCompletedRuns.
+	CompletedRuns []*RunAttempt `json:"completed_runs,omitempty"`
 
 	// AgentTotals holds aggregate resource consumption.
 	AgentTotals AgentTotals `json:"agent_totals"`
@@ -73,4 +80,17 @@ func (s *OrchestratorState) AvailableSlots() int {
 		return 0
 	}
 	return slots
+}
+
+// AddCompletedRun prepends a completed run attempt. Keeps at most MaxCompletedRuns.
+func (s *OrchestratorState) AddCompletedRun(run *RunAttempt) {
+	s.CompletedRuns = append([]*RunAttempt{run}, s.CompletedRuns...)
+	if len(s.CompletedRuns) > MaxCompletedRuns {
+		s.CompletedRuns = s.CompletedRuns[:MaxCompletedRuns]
+	}
+}
+
+// RetryCount returns the number of pending retries.
+func (s *OrchestratorState) RetryCount() int {
+	return len(s.RetryAttempts)
 }

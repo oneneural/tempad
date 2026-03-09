@@ -1,7 +1,9 @@
 package domain
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -100,5 +102,46 @@ func TestOrchestratorState(t *testing.T) {
 		state, unlock := s.Snapshot()
 		defer unlock()
 		assert.Equal(t, 1000, state.PollIntervalMs)
+	})
+
+	t.Run("AddCompletedRun", func(t *testing.T) {
+		s := NewOrchestratorState(1000, 5)
+		assert.Empty(t, s.CompletedRuns)
+
+		// Add runs.
+		for i := 0; i < 25; i++ {
+			s.AddCompletedRun(&RunAttempt{
+				IssueID:         fmt.Sprintf("issue-%d", i),
+				IssueIdentifier: fmt.Sprintf("ONE-%d", i),
+				Status:          "succeeded",
+			})
+		}
+
+		// Should be capped at MaxCompletedRuns.
+		assert.Len(t, s.CompletedRuns, MaxCompletedRuns)
+		// Most recent first.
+		assert.Equal(t, "ONE-24", s.CompletedRuns[0].IssueIdentifier)
+		assert.Equal(t, "ONE-5", s.CompletedRuns[MaxCompletedRuns-1].IssueIdentifier)
+	})
+
+	t.Run("RetryCount", func(t *testing.T) {
+		s := NewOrchestratorState(1000, 5)
+		assert.Equal(t, 0, s.RetryCount())
+		s.RetryAttempts["1"] = &RetryEntry{IssueID: "1"}
+		assert.Equal(t, 1, s.RetryCount())
+	})
+
+	t.Run("RunAttempt_NewFields", func(t *testing.T) {
+		now := time.Now()
+		exitCode := 0
+		run := &RunAttempt{
+			IssueID:    "1",
+			Mode:       "agent",
+			ExitCode:   &exitCode,
+			FinishedAt: &now,
+		}
+		assert.Equal(t, "agent", run.Mode)
+		assert.Equal(t, 0, *run.ExitCode)
+		assert.NotNil(t, run.FinishedAt)
 	})
 }

@@ -20,9 +20,18 @@ type RunAttempt struct {
 	// StartedAt is when this attempt was launched.
 	StartedAt time.Time `json:"started_at"`
 
+	// FinishedAt is when the attempt completed (nil if still running).
+	FinishedAt *time.Time `json:"finished_at,omitempty"`
+
 	// Status is the current status of the attempt.
 	// Values: "running", "succeeded", "failed", "timed_out", "stalled", "canceled"
 	Status string `json:"status"`
+
+	// Mode indicates how the issue is being worked: "agent" or "ide".
+	Mode string `json:"mode,omitempty"`
+
+	// ExitCode is the agent process exit code (nil if still running or IDE mode).
+	ExitCode *int `json:"exit_code,omitempty"`
 
 	// Error is an optional error message if the attempt failed.
 	Error string `json:"error,omitempty"`

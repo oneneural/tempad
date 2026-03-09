@@ -14,7 +14,9 @@ import (
 	"github.com/oneneural/tempad/internal/claim"
 	"github.com/oneneural/tempad/internal/config"
 	"github.com/oneneural/tempad/internal/domain"
+	"github.com/oneneural/tempad/internal/logbuf"
 	"github.com/oneneural/tempad/internal/notify"
+	"github.com/oneneural/tempad/internal/orchestrator"
 	"github.com/oneneural/tempad/internal/prompt"
 	"github.com/oneneural/tempad/internal/tracker"
 	"github.com/oneneural/tempad/internal/workspace"
@@ -26,6 +28,8 @@ type viewState int
 const (
 	viewBoard  viewState = iota // task board (default)
 	viewDetail                  // single issue detail
+	viewSplit                   // board + log pane
+	viewLogs                    // fullscreen logs
 )
 
 // Model is the root Bubble Tea model for TUI mode.
@@ -36,6 +40,9 @@ type Model struct {
 	ws       *workspace.Manager
 	notifier *notify.Notifier
 
+	// Orchestrator (nil in IDE-only mode).
+	orch *orchestrator.Orchestrator
+
 	// View state
 	view viewState
 
@@ -45,8 +52,20 @@ type Model struct {
 	cursor    int            // selected index in the combined list
 	selectedID string        // preserved across poll refreshes
 
+	// Orchestrator state (updated by orchTick).
+	orchRunning       map[string]*domain.RunAttempt
+	orchRetryAttempts  map[string]*domain.RetryEntry
+	orchCompletedRuns []*domain.RunAttempt
+
 	// Detail view
 	detailIssue *domain.Issue
+
+	// Log pane state
+	logIssueID   string          // which issue's logs are displayed
+	logOffset    int             // current read offset into ring buffer
+	logLines     []logbuf.LogLine // currently displayed log lines
+	logAutoScroll bool           // auto-scroll to bottom
+	logScrollPos int             // scroll position (lines from bottom)
 
 	// Poll state
 	pollInFlight bool
@@ -82,10 +101,18 @@ func NewModel(ctx context.Context, cfg *config.ServiceConfig, client tracker.Cli
 		ws:            ws,
 		notifier:      notifier,
 		view:          viewBoard,
+		logAutoScroll: true,
 		knownIssueIDs: make(map[string]bool),
 		reloadCh:      reloadCh,
 		ctx:           ctx,
 	}
+}
+
+// NewModelWithOrchestrator creates a TUI model with an embedded orchestrator.
+func NewModelWithOrchestrator(ctx context.Context, cfg *config.ServiceConfig, client tracker.Client, ws *workspace.Manager, reloadCh <-chan *config.ServiceConfig, notifier *notify.Notifier, orch *orchestrator.Orchestrator) Model {
+	m := NewModel(ctx, cfg, client, ws, reloadCh, notifier)
+	m.orch = orch
+	return m
 }
 
 // Init implements tea.Model. Fires an initial poll.
@@ -96,6 +123,9 @@ func (m Model) Init() tea.Cmd {
 	}
 	if m.reloadCh != nil {
 		cmds = append(cmds, m.waitForReloadCmd())
+	}
+	if m.orch != nil {
+		cmds = append(cmds, m.orchTickCmd())
 	}
 	return tea.Batch(cmds...)
 }
@@ -115,6 +145,38 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.pollInFlight = true
 		return m, tea.Batch(m.pollCmd(), m.tickCmd())
+
+	case orchTickMsg:
+		if m.orch != nil {
+			state, unlock := m.orch.State().Snapshot()
+			m.orchRunning = make(map[string]*domain.RunAttempt, len(state.Running))
+			for k, v := range state.Running {
+				m.orchRunning[k] = v
+			}
+			m.orchRetryAttempts = make(map[string]*domain.RetryEntry, len(state.RetryAttempts))
+			for k, v := range state.RetryAttempts {
+				m.orchRetryAttempts[k] = v
+			}
+			m.orchCompletedRuns = make([]*domain.RunAttempt, len(state.CompletedRuns))
+			copy(m.orchCompletedRuns, state.CompletedRuns)
+			unlock()
+		}
+		return m, m.orchTickCmd()
+
+	case logTickMsg:
+		if m.logIssueID != "" && m.orch != nil {
+			if buf := m.orch.LogBuffer(m.logIssueID); buf != nil {
+				newLines := buf.Lines(m.logOffset)
+				if len(newLines) > 0 {
+					m.logLines = append(m.logLines, newLines...)
+					m.logOffset = buf.Len()
+				}
+			}
+		}
+		if m.view == viewSplit || m.view == viewLogs {
+			return m, m.logTickCmd()
+		}
+		return m, nil
 
 	case PollResultMsg:
 		m.pollInFlight = false
@@ -225,6 +287,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch m.view {
 		case viewBoard:
 			return m.updateBoard(msg)
+		case viewSplit:
+			return m.updateSplit(msg)
+		case viewLogs:
+			return m.updateLogs(msg)
 		case viewDetail:
 			return m.updateDetail(msg)
 		}
@@ -238,9 +304,18 @@ func (m Model) View() string {
 	switch m.view {
 	case viewDetail:
 		return m.viewDetail()
+	case viewSplit:
+		return m.viewSplitPane()
+	case viewLogs:
+		return m.viewFullscreenLogs()
 	default:
 		return m.viewBoard()
 	}
+}
+
+// hasOrchestrator returns true if the orchestrator is present.
+func (m Model) hasOrchestrator() bool {
+	return m.orch != nil
 }
 
 // allIssues returns the combined list: available then active.
@@ -281,6 +356,25 @@ func (m *Model) restoreCursor() {
 	}
 }
 
+// openLogPane opens the log pane for the given issue.
+func (m *Model) openLogPane(issueID string) tea.Cmd {
+	m.logIssueID = issueID
+	m.logOffset = 0
+	m.logLines = nil
+	m.logAutoScroll = true
+	m.logScrollPos = 0
+
+	// Load initial lines from buffer.
+	if m.orch != nil {
+		if buf := m.orch.LogBuffer(issueID); buf != nil {
+			m.logLines = buf.Lines(0)
+			m.logOffset = buf.Len()
+		}
+	}
+
+	return m.logTickCmd()
+}
+
 // pollCmd creates a tea.Cmd that fetches issues from the tracker.
 func (m Model) pollCmd() tea.Cmd {
 	client := m.tracker
@@ -308,6 +402,20 @@ func (m Model) tickCmd() tea.Cmd {
 	interval := time.Duration(m.cfg.PollIntervalMs) * time.Millisecond
 	return tea.Tick(interval, func(_ time.Time) tea.Msg {
 		return tickMsg{}
+	})
+}
+
+// orchTickCmd schedules an orchestrator state refresh (200ms).
+func (m Model) orchTickCmd() tea.Cmd {
+	return tea.Tick(200*time.Millisecond, func(_ time.Time) tea.Msg {
+		return orchTickMsg{}
+	})
+}
+
+// logTickCmd schedules a log pane update (100ms).
+func (m Model) logTickCmd() tea.Cmd {
+	return tea.Tick(100*time.Millisecond, func(_ time.Time) tea.Msg {
+		return logTickMsg{}
 	})
 }
 
@@ -397,3 +505,4 @@ func (m Model) waitForReloadCmd() tea.Cmd {
 
 // updateBoard is defined in keys.go.
 // updateDetail and viewDetail are defined in detail.go.
+// updateSplit, updateLogs, viewSplitPane, viewFullscreenLogs are in logpane.go.

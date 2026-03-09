@@ -71,6 +71,65 @@ var (
 	emptyStyle = lipgloss.NewStyle().
 			Foreground(colorMuted).
 			Italic(true)
+
+	// Completed section header.
+	completedSectionHeaderStyle = lipgloss.NewStyle().
+					Bold(true).
+					Foreground(lipgloss.Color("#FFFFFF")).
+					Background(lipgloss.Color("#6B7280")).
+					Padding(0, 1)
+
+	// Summary bar style (top-right status indicators).
+	summaryStyle = lipgloss.NewStyle().
+			Foreground(colorMuted)
+
+	// Status indicator styles.
+	agentRunningStyle = lipgloss.NewStyle().
+				Foreground(colorSuccess).
+				Bold(true)
+
+	ideActiveStyle = lipgloss.NewStyle().
+			Foreground(colorAccent).
+			Bold(true)
+
+	retryPendingStyle = lipgloss.NewStyle().
+				Foreground(colorHigh).
+				Bold(true)
+
+	stalledStyle = lipgloss.NewStyle().
+			Foreground(colorUrgent).
+			Bold(true)
+
+	doneStyle = lipgloss.NewStyle().
+			Foreground(colorSuccess)
+
+	failedStyle = lipgloss.NewStyle().
+			Foreground(colorUrgent)
+
+	// Log pane styles.
+	logHeaderStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("#FFFFFF")).
+			Background(lipgloss.Color("#1E3A5F")).
+			Padding(0, 1)
+
+	logTimestampStyle = lipgloss.NewStyle().
+				Foreground(colorMuted)
+
+	logStdoutStyle = lipgloss.NewStyle()
+
+	logStderrStyle = lipgloss.NewStyle().
+			Foreground(colorHigh)
+
+	logTempadStyle = lipgloss.NewStyle().
+			Foreground(colorAccent).
+			Italic(true)
+
+	logStreamTagStyle = lipgloss.NewStyle().
+				Foreground(colorMuted)
+
+	logAutoScrollStyle = lipgloss.NewStyle().
+				Foreground(colorSuccess)
 )
 
 // priorityStyle returns a styled priority indicator.

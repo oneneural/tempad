@@ -74,6 +74,7 @@ type ServiceConfig struct {
 // CLIFlags holds command-line overrides. These have highest precedence.
 type CLIFlags struct {
 	Daemon       bool
+	Headless     bool
 	DryRun       bool
 	WorkflowPath string
 	Identity     string
