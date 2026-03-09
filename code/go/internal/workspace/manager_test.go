@@ -17,10 +17,21 @@ func TestNewManager(t *testing.T) {
 	}
 }
 
-func TestNewManager_NonExistent(t *testing.T) {
-	_, err := NewManager("/nonexistent/path/for/testing")
-	if err == nil {
-		t.Fatal("expected error for non-existent root")
+func TestNewManager_AutoCreatesDir(t *testing.T) {
+	root := filepath.Join(t.TempDir(), "nested", "workspaces")
+	m, err := NewManager(root)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if m.Root() != root {
+		t.Errorf("expected root=%s, got %s", root, m.Root())
+	}
+	info, err := os.Stat(root)
+	if err != nil {
+		t.Fatalf("directory should have been created: %v", err)
+	}
+	if !info.IsDir() {
+		t.Error("expected directory")
 	}
 }
 
